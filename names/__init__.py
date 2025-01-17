@@ -1,0 +1,1 @@
+game_name = "Corn Kidz 64"
