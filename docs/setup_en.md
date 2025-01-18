@@ -3,28 +3,31 @@
 ## Required Software
 
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases)
-- [This AP world](#todo)
-- [BepInEx 5.4+](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.2)
-- [This Game Mod](#todo)
+- [This AP world](https://github.com/Cyb3RGER/cornkidz64_apworld/releases/latest)
+- [BepInEx 5.4+](https://github.com/BepInEx/BepInEx/releases/latest)
+- [This Game Mod](https://github.com/Cyb3RGER/CornKidzAP/releases/latest)
 
 ## Installation Procedures
 
 ### Installing the apworld
 
-- Place ``cornkidz64.apworld`` in ``custom_worlds`` of your AP installation.
+To install the ``cornkidz64.apworld``:
 
-For more information about .apworlds
-see [here](https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/apworld%20specification.md)
+- **Option 1:** Double-click the ``cornkidz64.apworld`` file, or
+- **Option 2:** Manually place the ``cornkidz64.apworld`` file in the ``custom_worlds`` folder of your AP installation.
+
+For more information about .apworld files, refer to the [APWorld Specification](https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/apworld%20specification.md).
 
 ### Installing the Game Mod
 
 - Navigate to the games installation folder.
-  - In Steam, you can right-click the title and select ``Manage -> Browse local files``.
-- Extract the content of the BepInEx zip into the games folder
-- Start the game and exit again.
-- Navigate to ``BepInEx\plugins`` in the games folder.
-- Create a folder ``CornKidzAP`` and extract the content of the game mod zip into it.
+    - In Steam, you can right-click the title and select ``Manage -> Browse local files``.
+- Extract the content of the BepInEx zip into the game's folder
+- Launch the game and exit again.
+- Navigate to ``BepInEx\plugins`` in the game's folder.
+- Extract the ``CornKidzAP`` folder form game mod zip into the ``plugins`` folder.
 
+**If using Linux,** add ``WINEDLLOVERRIDES="winhttp=n,b" %command%`` to your launch arguments on Steam. To add launch arguments, you can right-click the title and select ``Manage -> Properties`` and add it under ``Launch Options``.
 
 ## Create a Config (.yaml) File
 
@@ -35,7 +38,7 @@ guide: [Basic Multiworld Setup Guide](https://archipelago.gg/tutorial/Archipelag
 
 ### Where do I get a config file?
 
-A default yaml is included in the download. Alternative you can use the Web Host when running from source.
+Open the Archipelago Launcher and click ``Generate Template Options`` with the apworld installed. This will create default options for all installed apworlds. Look for ``Corn Kidz 64.yaml`` — this is your example yaml file.
 
 ### Verifying your config file
 
@@ -44,8 +47,13 @@ validator page: [YAML Validation page](https://archipelago.gg/mysterycheck)
 
 ## Joining a MultiWorld Game
 
-After the games launch screen an Archipelago UI in the top left corner should appear. Enter the servers hostname and post and your slot name and password, then hit ``Connect``. 
+After the game's launch screen, an Archipelago UI will appear in the top left corner. To connect, enter the following:
 
+1. Server's host address and port in the usual format (e.g., ``archipelago.gg:38281``)
+2. Your slot name
+3. Password (optional)
+
+Then, click ``Connect``.
 
 ## Hosting a MultiWorld game
 

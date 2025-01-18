@@ -20,8 +20,9 @@ class XPCount(Range):
     range_end = 500
     default = 360
 
+
 class XPItemCount(Range):
-    """The amount of XP items in the item pool. Use this to make more space for junk (filler/trap) item"""
+    """The amount of XP items in the item pool. Use this to make more space for junk (filler/trap) items."""
     display_name = "XP Item Count"
     range_start = 52
     range_end = 134
@@ -38,7 +39,7 @@ class MaxHP(Range):
     default = 8
 
 
-class Cranksanity(Toggle):
+class Cranksanity(DefaultOnToggle):
     """Randomizes the locations where cranks can be found."""
     display_name = "Cranksanity"
 
@@ -47,6 +48,7 @@ class Ratsanity(Toggle):
     """Adds the Sanitary Zoo rats into the item and location pool.
     Collecting them all is required for the zoo to be clean."""
     display_name = "Ratsanity"
+
 
 class Fishsanity(Toggle):
     """Adds the purple Fish into the item and location pool.
@@ -141,7 +143,7 @@ corn_kidz_option_groups: list[OptionGroup] = [
         name="Base Options",
         options=[
             Goal,
-            #OpenMode,
+            # OpenMode,
             TrapPercentage]
     ),
     OptionGroup(
@@ -151,7 +153,7 @@ corn_kidz_option_groups: list[OptionGroup] = [
             Ratsanity,
             Fishsanity,
             Achievementsanity,
-            #Movesanity
+            # Movesanity
         ],
     ),
     OptionGroup(

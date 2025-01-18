@@ -8,7 +8,7 @@ from Options import Accessibility
 from worlds.AutoWorld import World, WebWorld
 from .items import item_table, CornKidzItem, lookup_name_to_id as item_name_to_id, get_trap_item_names, get_filler_item_names
 from .locations import location_table, CK64LocationData, lookup_name_to_id as loc_name_to_id, achievement_locations, CornKidzLocation, goal_locations, locked_locations, rat_locations, crank_locations, CornKidzLocationType
-from .options import CornKidz64Options, Goal
+from .options import CornKidz64Options, Goal, corn_kidz_option_groups
 from .regions import region_table, CK64EntranceData, CK64RegionData
 from .rules import rules_to_func
 from .constants import item_names, GameName, region_names, BaseId
@@ -16,6 +16,8 @@ from .constants import item_names, GameName, region_names, BaseId
 logger = logging.getLogger("Corn Kidz 64")
 
 class CornKidzWeb(WebWorld):
+    theme = "partyTime"
+    option_groups = corn_kidz_option_groups
     tutorials = [Tutorial(
         "Multiworld Setup Guide",
         "A guide to setting up the Corn Kidz 64 integration for Archipelago multiworld games.",
