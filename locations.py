@@ -29,7 +29,7 @@ class CK64LocationData:
     game_id: typing.Optional[int]
     region: str
     # Rule lists are OR'd together.
-    text: typing.Optional[str] #text for LocationProgressType.Text
+    text: typing.Optional[str]  # text for LocationProgressType.Text
     rules: list[list[Rule]] = field(default_factory=list)
     type: CornKidzLocationType = CornKidzLocationType.SAVEITEM  # this doesn't do anything rn, just for me to keep track
     progress_type: LocationProgressType = LocationProgressType.DEFAULT  # ignored for now
@@ -964,13 +964,29 @@ location_table: list[CK64LocationData] = [
         location_names.THISGUYWASASICKO, None,
         region_names.WollowsHollowHouseTop,
         [Rule.Jump, Rule.Slam],
-        _type=CornKidzLocationType.TEXT
+        _type=CornKidzLocationType.TEXT,
+        text="OH DEAR GOD! THIS GUY WAS A SICKO!!"
     ),
     CK64LocationData(
         location_names.HOWDY, None,
         region_names.WollowsHollowZoo,
         [Rule.CanUseMetalWorm],
-        _type=CornKidzLocationType.TEXT
+        _type=CornKidzLocationType.TEXT,
+        text="HOWDY"
+    ),
+    CK64LocationData(
+        location_names.STUPIDDUCK, None,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TEXT,
+        text="CAN SOMEBODY TELL ME WHAT THESE STUPID DUCK THINGS EVEN ARE?"
+    ),
+    CK64LocationData(
+        location_names.SYBIL, None,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TEXT,
+        text="DANG... WHY COULDN'T I HAVE BEEN TRAPPED IN A REOCCURING DREAM WITH HER INSTEAD OF ALEXIS?"
     ),
     # endregion
     # region Events
@@ -1152,7 +1168,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.BlueHeadband, None,
         region_names.SomeOtherPlace,
-        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming], #ToDo: Validate move rando requirements
+        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
         _type=CornKidzLocationType.TEXT,
         text="WEAR BLUE HEADBAND + SHIRT?"
 
@@ -1160,11 +1176,18 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.GreenHeadband, None,
         region_names.SomeOtherPlace,
-        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming], #ToDo: Validate move rando requirements
+        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
         _type=CornKidzLocationType.TEXT,
         text="WEAR GREEN HEADBAND + SHIRT?"
     ),
-    #endregion
+    CK64LocationData(
+        location_names.BlackHeadband, None,
+        region_names.AnxietyTower,
+        [Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TEXT,
+        text="WEAR BLACK HEADBAND + SHIRT?"
+    ),
+    # endregion
 ]
 
 locked_locations = [

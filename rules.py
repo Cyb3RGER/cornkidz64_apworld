@@ -108,63 +108,64 @@ def AnyVoidScrew(state: CollectionState, world: MultiWorld, player: int, options
 def AnyHPItem(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
     return state.has(item_names.MegaDreamSoda, player)
 
+
 # ToDo: implement movement rando
 @rule(CK64Rule.Jump)
 def Jump(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    #return state.has(item_names.Jump, player) or options.can_jump
+    # return state.has(item_names.Jump, player) or options.can_jump
     return True
 
 
 @rule(CK64Rule.Punch)
 def Punch(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    #return state.has(item_names.Punch, player) or options.can_punch
+    # return state.has(item_names.Punch, player) or options.can_punch
     return True
 
 
 @rule(CK64Rule.Climb)
 def Climb(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    #return state.has(item_names.Climb, player) or options.can_climb
+    # return state.has(item_names.Climb, player) or options.can_climb
     return True
 
 
 @rule(CK64Rule.Slam)
 def Slam(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    #return state.has(item_names.Slam, player) or options.can_ground_pound
+    # return state.has(item_names.Slam, player) or options.can_ground_pound
     return True
 
 
 @rule(CK64Rule.Headbutt)
 def Headbutt(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    #return state.has(item_names.Headbutt, player) or options.can_headbutt
+    # return state.has(item_names.Headbutt, player) or options.can_headbutt
     return True
 
 
 @rule(CK64Rule.WallJump)
 def WallJump(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    #return state.has(item_names.WallJump, player) or options.can_wall_jump
+    # return state.has(item_names.WallJump, player) or options.can_wall_jump
     return True
 
 
 @rule(CK64Rule.Swim)
 def Swim(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    #return state.has(item_names.Swim, player) or options.can_swim
+    # return state.has(item_names.Swim, player) or options.can_swim
     return True
 
 
 @rule(CK64Rule.Crouch)
 def Crouch(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    #return state.has(item_names.Crouch, player) or options.can_crouch
+    # return state.has(item_names.Crouch, player) or options.can_crouch
     return True
 
 
 @rule(CK64Rule.Drill)
 def Drill(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.Drill, player) #or options.can_drill
+    return state.has(item_names.Drill, player)  # or options.can_drill
 
 
 @rule(CK64Rule.FallWarp)
 def FallWarp(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.FallWarp, player) #or options.can_fall_warp
+    return state.has(item_names.FallWarp, player)  # or options.can_fall_warp
 
 
 @rule(CK64Rule.TowerMovement)
@@ -371,11 +372,16 @@ def CanReachGraveyardTop(state: CollectionState, world: MultiWorld, player: int,
     return state.can_reach(region_names.WollowsHollowAboveGraveyard, None, player)
 
 
-@rule(CK64Rule.CanReachFlippedHollow)
-def CanReachFlippedHollow(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
+@rule(CK64Rule.CanReachSpinnyChamber)
+def CanReachSpinnyChamber(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
     return state.can_reach(region_names.WollowsHollowDrillChamber, None, player) and \
         Slam(state, world, player, options) and \
-        Drill(state, world, player, options) and \
+        Drill(state, world, player, options)
+
+
+@rule(CK64Rule.CanReachFlippedHollow)
+def CanReachFlippedHollow(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
+    return CanReachSpinnyChamber(state, world, player, options) and \
         AllDiscoBalls(state, world, player, options)
 
 
@@ -399,7 +405,7 @@ def CanClimbInteriorTree(state: CollectionState, world: MultiWorld, player: int,
 @rule(CK64Rule.BatTreeSideRoom)
 def BatTreeSideRoom(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
     return CanReachFlippedHollow(state, world, player, options) and \
-        CrankZooSide(state,world,player,options) and \
+        CrankZooSide(state, world, player, options) and \
         Jump(state, world, player, options) and \
         Drill(state, world, player, options) and \
         Headbutt(state, world, player, options) and \
@@ -439,6 +445,7 @@ def CanCleanZoo(state: CollectionState, world: MultiWorld, player: int, options:
             MaxPlatforming(state, world, player, options) and \
             Drill(state, world, player, options) and \
             Punch(state, world, player, options)
+
 
 @rule(CK64Rule.CanKillAllFish)
 def CanKillAllFish(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):

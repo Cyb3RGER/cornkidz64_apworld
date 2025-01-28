@@ -318,34 +318,34 @@ class CornKidz(World):
         # ToDo: remove; dev only
         # TAB = '    '
         # with open(f'{output_directory}/LocationMappingDump.cs', 'w') as f:
-        #     lines = [f'{TAB}private static readonly Dictionary<long, int> APLocIdToSaveItemId = new()', f'{TAB}{{']
+        #     lines = [f'{TAB}public static readonly Dictionary<long, int> APLocIdToSaveItemId = new()', f'{TAB}{{']
         #     for i, loc in enumerate(location_table):
         #         if loc.type == CornKidzLocationType.SAVEITEM:
         #             lines += [f'{TAB * 2}{{ BaseID + {i}, {loc.game_id} }}, //{loc.name}']
         #     lines += [f'{TAB}}};', '']
-        #     lines += [f'{TAB}private static readonly Dictionary<long, int> APLocIdToUpgradeId = new()', f'{TAB}{{']
+        #     lines += [f'{TAB}public static readonly Dictionary<long, int> APLocIdToUpgradeId = new()', f'{TAB}{{']
         #     for i, loc in enumerate(location_table):
         #         if loc.type == CornKidzLocationType.UPGRADE:
         #             lines += [f'{TAB * 2}{{ BaseID + {i}, {loc.game_id} }}, //{loc.name}']
         #     lines += [f'{TAB}}};', '']
-        #     lines += [f'{TAB}private static readonly Dictionary<long, int> APLocIdToAchievementId = new()', f'{TAB}{{']
+        #     lines += [f'{TAB}public static readonly Dictionary<long, int> APLocIdToAchievementId = new()', f'{TAB}{{']
         #     for i, loc in enumerate(location_table):
         #         if loc.type == CornKidzLocationType.ACHIEVEMENT:
         #             lines += [f'{TAB * 2}{{ BaseID + {i}, {loc.game_id} }}, //{loc.name}']
         #     lines += [f'{TAB}}};', '']
-        #     lines += [f'{TAB}private static readonly Dictionary<long, int> APLocIdToSwitchId = new()', f'{TAB}{{']
+        #     lines += [f'{TAB}public static readonly Dictionary<long, int> APLocIdToSwitchId = new()', f'{TAB}{{']
         #     for i, loc in enumerate(location_table):
         #         if loc.type == CornKidzLocationType.SWITCH:
         #             lines += [f'{TAB * 2}{{ BaseID + {i}, {loc.game_id} }}, //{loc.name}']
         #     lines += [f'{TAB}}};', '']
-        #     lines += [f'{TAB}private static readonly Dictionary<long, int> APLocIdToRatIndex = new()', f'{TAB}{{']
+        #     lines += [f'{TAB}public static readonly Dictionary<long, int> APLocIdToRatIndex = new()', f'{TAB}{{']
         #     j = 0
         #     for i, loc in enumerate(location_table):
         #         if loc.type == CornKidzLocationType.RAT:
         #             lines += [f'{TAB * 2}{{ BaseID + {i}, {j} }}, //{loc.name}']
         #             j += 1
         #     lines += [f'{TAB}}};', '']
-        #     lines += [f'{TAB}private static readonly Dictionary<long, string> APLocIdToString = new()', f'{TAB}{{']
+        #     lines += [f'{TAB}public static readonly Dictionary<long, string> APLocIdToString = new()', f'{TAB}{{']
         #     for i, loc in enumerate(location_table):
         #         if loc.type == CornKidzLocationType.TEXT:
         #             lines += [f'{TAB * 2}{{ BaseID + {i}, "{loc.text}" }}, //{loc.name}']

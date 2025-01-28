@@ -144,7 +144,9 @@ corn_kidz_option_groups: list[OptionGroup] = [
         options=[
             Goal,
             # OpenMode,
-            TrapPercentage]
+            # MaxHP,
+            TrapPercentage
+        ]
     ),
     OptionGroup(
         name="Randomization Options",

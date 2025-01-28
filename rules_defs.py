@@ -63,7 +63,8 @@ class CK64Rule(Enum):
     CanReachCagedRooftops = auto()
     CanReachGraveyard = auto()
     CanReachGraveyardTop = auto()
-    CanReachFlippedHollow = auto()  # WollowsHollowDrillChamber, Slam, Drill, 5 disco balls
+    CanReachSpinnyChamber = auto() # WollowsHollowDrillChamber, Slam, Drill
+    CanReachFlippedHollow = auto() # CanReachSpinnyChamber, 5 disco balls
     CanEnterFountain = auto()  # CanReachFlippedHollow, jump, headbutt, climb or walljump, swim
     CanClimbInteriorTree = auto()  # WollowsHollowTree, MaxPlatforming, slam, drill
 
