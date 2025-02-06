@@ -380,8 +380,8 @@ location_table: list[CK64LocationData] = [
     ),
     CK64LocationData(
         location_names.CubeHollowTrinketShop, 232,
-        region_names.WollowsHollow,
-        [Rule.MaxPlatforming],
+        region_names.WollowsHollowTrinkets,
+        [Rule.MaxPlatforming, Rule.CanReachSpinnyChamber],
     ),
     CK64LocationData(
         location_names.CubeHollowClockWallClimb1, 231,
@@ -654,7 +654,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.ScrewHollowTownClock, 203,
         region_names.WollowsHollow,
-        [Rule.MaxPlatforming, Rule.Headbutt],
+        [Rule.MaxPlatforming, Rule.Headbutt, Rule.CanReachFlippedHollow],
     ),
     CK64LocationData(
         location_names.ScrewHollowDrillTowerAlcove, 200,
@@ -808,8 +808,8 @@ location_table: list[CK64LocationData] = [
     # region Disco Balls
     CK64LocationData(
         location_names.DiscoBallHollowTrinketShop, 306,
-        region_names.WollowsHollow,
-        [Rule.MaxPlatforming],
+        region_names.WollowsHollowTrinkets,
+        [Rule.MaxPlatforming, Rule.CanReachSpinnyChamber],
     ),
     CK64LocationData(
         location_names.DiscoBallHollowDragonChest, 300,
