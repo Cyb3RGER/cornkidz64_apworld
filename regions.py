@@ -212,7 +212,8 @@ region_table: List[CK64RegionData] = [
         [
             CK64EntranceData(
                 region_names.WollowsHollowZombies,
-                [Rule.MaxPlatforming, Rule.Punch, Rule.Level3, Rule.CanReachSpinnyChamber]
+                [Rule.MaxPlatforming, Rule.Punch, Rule.Level3, Rule.CanReachSpinnyChamber],
+                [region_names.WollowsHollowDrillChamber]
             )
         ]
     ),
