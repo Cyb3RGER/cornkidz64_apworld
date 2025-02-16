@@ -906,12 +906,12 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.VoidScrewAnxietyTower1, 411,
         region_names.AnxietyTower,
-        [Rule.AnxietyTowerChecks, Rule.Slam],
+        [Rule.AnxietyTowerChecks, Rule.CrankAnxietyTower, Rule.Slam],
     ),
     CK64LocationData(
         location_names.VoidScrewAnxietyTower2, 412,
         region_names.AnxietyTower,
-        [Rule.AnxietyTowerChecks, Rule.Slam, Rule.Crouch],
+        [Rule.AnxietyTowerChecks, Rule.CrankAnxietyTower, Rule.Slam, Rule.Crouch],
     ),
     # endregion
     # region Anxiety Tower
@@ -1048,7 +1048,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.Achievement_AnxietyAttack, 6,
         region_names.AnxietyTower,
-        [Rule.AnxietyTowerChecks, Rule.TowerMovement],
+        [Rule.AnxietyTowerChecks, Rule.CrankAnxietyTower, Rule.TowerMovement],
         _type=CornKidzLocationType.ACHIEVEMENT,
     ),
     CK64LocationData(

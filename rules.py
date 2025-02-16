@@ -435,6 +435,11 @@ def CrankZooSide(state: CollectionState, world: MultiWorld, player: int, options
     return not options.cranksanity or state.has(item_names.CrankHollowZooWall, player)
 
 
+@rule(CK64Rule.CrankAnxietyTower)
+def CrankAnxietyTower(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
+    return not options.cranksanity or state.has(item_names.CrankAnxietyTower, player)
+
+
 @rule(CK64Rule.CanCleanZoo)
 def CanCleanZoo(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
     if options.ratsanity:

@@ -74,6 +74,7 @@ class CK64Rule(Enum):
     CrankMonsterPark = auto()
     CrankHollowDragonWall = auto()
     CrankZooSide = auto()  # SaveTrigger 229 when placed
+    CrankAnxietyTower = auto()
 
     CanKillAllFish = auto() # CanClimbInteriorTree and CanAccessGraveyardBomb or Fishsantiy and has 3 Fish
     CanCleanZoo = auto()  # WollowsHollowZoo, ((max platforming, drill, punch) or ratsanity)
