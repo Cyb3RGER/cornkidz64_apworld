@@ -13,6 +13,8 @@ from .regions import region_table, CK64EntranceData, CK64RegionData
 from .rules import rules_to_func
 from .constants import item_names, GameName, region_names, BaseId
 
+ck64_version = (0, 0, 4)
+
 logger = logging.getLogger("Corn Kidz 64")
 
 class CornKidzWeb(WebWorld):
@@ -288,6 +290,7 @@ class CornKidz(World):
 
     def fill_slot_data(self):
         return {
+            "version": ".".join(map(str, ck64_version)),
             "goal": self.options.goal.value,
             #"xp_count": self.options.xp_count.value,
             #"max_hp": self.options.max_hp.value,
