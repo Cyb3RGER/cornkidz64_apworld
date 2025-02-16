@@ -1005,7 +1005,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.AnxietyComplete, None,
         region_names.AnxietyTower,
-        [Rule.PostOwllohDefeated, Rule.TowerMovement],
+        [Rule.AnxietyTowerChecks, Rule.TowerMovement, Rule.CrankAnxietyTower],
         _type=CornKidzLocationType.EVENT
     ),
     CK64LocationData(

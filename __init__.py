@@ -317,7 +317,8 @@ class CornKidz(World):
         pass
 
     def generate_output(self, output_directory: str) -> None:
-        # Utils.visualize_regions(self.get_region(RegionNames.Menu), f'{output_directory}/{self.multiworld.get_out_file_name_base(self.player)}.puml')
+        # import Utils
+        # Utils.visualize_regions(self.get_region(region_names.Menu), f'{output_directory}/{self.multiworld.get_out_file_name_base(self.player)}.puml')
         # ToDo: remove; dev only
         # TAB = '    '
         # with open(f'{output_directory}/LocationMappingDump.cs', 'w') as f:
