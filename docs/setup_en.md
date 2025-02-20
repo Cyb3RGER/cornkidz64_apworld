@@ -5,6 +5,7 @@
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases)
 - [This AP world](https://github.com/Cyb3RGER/cornkidz64_apworld/releases/latest)
 - [BepInEx 5.4+](https://github.com/BepInEx/BepInEx/releases/latest)
+  - Make sure to download the x64 version.
 - [This Game Mod](https://github.com/Cyb3RGER/CornKidzAP/releases/latest)
 
 ## Installation Procedures
