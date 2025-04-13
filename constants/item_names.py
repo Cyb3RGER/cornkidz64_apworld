@@ -48,5 +48,8 @@ SkidTrap = 'Skid Trap'
 
 # Filler
 DreamSoda = 'Dream Soda'
+BlueHeadband = 'Blue Headband'
+GreenHeadband = 'Green Headband'
+BlackHeadband = 'Black Headband'
 
 Victory = "Victory"
