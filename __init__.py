@@ -267,6 +267,7 @@ class CornKidz(World):
         for i, location_data in enumerate(location_table):
             if (location_data.name in achievement_locations and not self.options.achievementsanity) or \
                     (location_data.name in rat_locations and not self.options.ratsanity) or \
+                    (location_data.name in fish_locations and not self.options.fishsanity) or \
                     (location_data.name in crank_locations and not self.options.cranksanity):
                 self.excluded_locations.append(location_data)
                 continue
