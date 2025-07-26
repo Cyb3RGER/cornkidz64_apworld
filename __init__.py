@@ -13,7 +13,7 @@ from .regions import region_table, CK64EntranceData, CK64RegionData
 from .rules import rules_to_func
 from .constants import item_names, GameName, region_names, BaseId, xp_name_to_value, xp_value_to_name
 
-ck64_version = (0, 0, 5)
+ck64_version = (0, 0, 6)
 
 logger = logging.getLogger("Corn Kidz 64")
 
