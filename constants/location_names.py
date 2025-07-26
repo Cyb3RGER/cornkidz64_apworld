@@ -178,6 +178,7 @@ THISGUYWASASICKO = "Hollow Graveyard: OH DEAR GOD! THIS GUY WAS A SICKO!!"
 HOWDY = "Hollow Zoo: HOWDY (Greet Metal Worm)"
 STUPIDDUCK = "Some Other Place: STUPID DUCK THING"
 SYBIL = "Some Other Place: Sybil Painting"
+ALLY = "Some Other Place: Ally Painting"
 #endregion
 #region Tower
 TowerComplete = "Anxiety Tower: Tower Complete"

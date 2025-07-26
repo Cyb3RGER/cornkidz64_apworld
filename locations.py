@@ -989,6 +989,13 @@ location_table: list[CK64LocationData] = [
         _type=CornKidzLocationType.TEXT,
         text="DANG... WHY COULDN'T I HAVE BEEN TRAPPED IN A REOCCURING DREAM WITH HER INSTEAD OF ALEXIS?"
     ),
+    CK64LocationData(
+        location_names.ALLY, None,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TEXT,
+        text="WHAT IS THIS? ALEXIS STEALING MY CLOTHES?"
+    ),
     # endregion
     # region Events
     CK64LocationData(
