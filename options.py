@@ -75,7 +75,7 @@ class Movesanity(Toggle):
     Adds the following player moves to the item pool:
     - Punch
     - Climb
-    - Ground Pound
+    - Slam
     - Headbutt
     - Wall Jump
     - Crouch
