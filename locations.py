@@ -84,21 +84,22 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeParkWater1, 101,
         region_names.MonsterParkAcrossLake,
-        [Rule.Swim],
+        [Rule.Dive],
     ),
     CK64LocationData(
         location_names.CubeParkWater2, 102,
         region_names.MonsterParkAcrossLake,
-        [Rule.Swim],
+        [Rule.Dive],
     ),
     CK64LocationData(
         location_names.CubeParkAcrossWater1, 103,
         region_names.MonsterParkAcrossLake,
-        [Rule.Jump, Rule.WallJump_Or_Climb],
+        [Rule.Jump, Rule.WallJump_Or_Climb, Rule.BombBird],
     ),
     CK64LocationData(
         location_names.CubeParkAcrossWater2, 104,
         region_names.MonsterParkAcrossLake,
+        [Rule.BombBird]
     ),
     CK64LocationData(
         location_names.CubeParkAcrossWater3, 119,
@@ -108,22 +109,22 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeParkAcrossWater4, 105,
         region_names.MonsterParkAcrossLake,
-        [Rule.Platforming],
+        [Rule.Platforming, Rule.Headbutt],
     ),
     CK64LocationData(
         location_names.CubeStoneStatue1, 122,
         region_names.MonsterParkAcrossLake,
-        [Rule.Platforming, Rule.Slam],
+        [Rule.Platforming, Rule.Headbutt, Rule.Slam],
     ),
     CK64LocationData(
         location_names.CubeStoneStatue2, 123,
         region_names.MonsterParkAcrossLake,
-        [Rule.Platforming, Rule.Slam],
+        [Rule.Platforming, Rule.Headbutt, Rule.Slam],
     ),
     CK64LocationData(
         location_names.CubeStoneStatue3, 124,
         region_names.MonsterParkAcrossLake,
-        [Rule.Platforming, Rule.Slam],
+        [Rule.Platforming, Rule.Headbutt, Rule.Slam],
     ),
     CK64LocationData(
         location_names.CubeParkFence, 112,
@@ -178,18 +179,18 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeParkHouseFoyer2, 115,
         region_names.MonsterParkHouseFoyer,
-        [Rule.Jump, Rule.Headbutt, Rule.WallJump_Or_Climb],
+        [Rule.MonsterParkHouseButtons],
     ),
     CK64LocationData(
         location_names.CubeParkHouseFoyer3, 114,
         region_names.MonsterParkHouseFoyer,
-        [[Rule.MaxPlatforming],
+        [[Rule.MaxPlatforming, Rule.MonsterParkHouseButtons],
          [Rule.CanReachParkTop, Rule.Climb]],
     ),
     CK64LocationData(
         location_names.CubeParkHouseFoyerTower, 131,
         region_names.MonsterParkHouseFoyer,
-        [[Rule.MaxPlatforming],
+        [[Rule.MaxPlatforming, Rule.MonsterParkHouseButtons],
          [Rule.CanReachParkTop, Rule.Jump_Or_Headbutt]],
     ),
     CK64LocationData(
@@ -215,14 +216,14 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeParkDrillPastLake, 108,
         region_names.MonsterParkAcrossLake,
-        [Rule.DrillDownwards],
+        [Rule.DrillDownwards, Rule.BombBird],
     ),
     # endregion
     # region Park Screws
     CK64LocationData(
         location_names.ScrewParkLakeBombYeet, 135,
         region_names.MonsterParkAcrossLake,
-        [Rule.BombBird, Rule.Slam, Rule.Swim],
+        [Rule.BombBird, Rule.Slam, Rule.Dive],
     ),
     CK64LocationData(
         location_names.ScrewParkAtticScrewScrew, 137,
@@ -318,7 +319,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.TrashCanFoyer, 155,
         region_names.MonsterParkHouseFoyer,
-        [Rule.Jump, Rule.Headbutt, Rule.WallJump_Or_Climb, Rule.BreakTrashcan],
+        [Rule.MonsterParkHouseButtons, Rule.BreakTrashcan],
     ),
     CK64LocationData(
         location_names.TrashCanParkTop, 150,
@@ -352,7 +353,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeHollowOnTrees, 209,
         region_names.WollowsHollow,
-        [Rule.Jump, Rule.Slam],
+        [Rule.Jump, Rule.Slam, Rule.Climb],
     ),
     CK64LocationData(
         location_names.CubeHollowLeavesUnderOwlTree, 225,
@@ -366,7 +367,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeHollowPillar1, 216,
         region_names.WollowsHollow,
-        [Rule.Jump, Rule.WallJump],
+        [Rule.Jump, Rule.WallJump, Rule.Climb_Or_Headbutt],
     ),
     CK64LocationData(
         location_names.CubeHollowPillar2, 217,
@@ -391,7 +392,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeHollowClockWallClimb2, 230,
         region_names.WollowsHollow,
-        [Rule.MaxPlatforming],
+        [Rule.Platforming],
     ),
     CK64LocationData(
         location_names.CubeHollowPillarOutsideChurch, 224,
@@ -451,7 +452,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeHollowGraveyardWater, 256,
         region_names.WollowsHollowGraveyard,
-        [Rule.Swim],
+        [Rule.Dive],
     ),
     CK64LocationData(
         location_names.CubeHollowGraveyardTombstoneCode1, 262,
@@ -471,12 +472,12 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeHollowBalcony1, 210,
         region_names.WollowsHollow,
-        [Rule.Jump, Rule.Climb, Rule.Headbutt],
+        [Rule.Jump, Rule.Climb, Rule.Climb_Or_Headbutt],
     ),
     CK64LocationData(
         location_names.CubeHollowBalcony2, 211,
         region_names.WollowsHollow,
-        [Rule.Jump, Rule.Climb, Rule.Headbutt],
+        [Rule.Jump, Rule.Climb, Rule.Climb_Or_Headbutt],
     ),
     CK64LocationData(
         location_names.CubeHollowNearBats1, 218,
@@ -575,12 +576,12 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeHollowMusicBoxSwim1, 278,
         region_names.WollowsHollowMusic,
-        [Rule.Swim],
+        [Rule.Dive],
     ),
     CK64LocationData(
         location_names.CubeHollowMusicBoxSwim2, 279,
         region_names.WollowsHollowMusic,
-        [Rule.Swim],
+        [Rule.Dive],
     ),
     CK64LocationData(
         location_names.CubeHollowBrickWall1, 234,
@@ -590,7 +591,7 @@ location_table: list[CK64LocationData] = [
     ),
     CK64LocationData(
         location_names.CubeHollowBrickWall2, 235,
-        region_names.WollowsHollowMusic,
+        region_names.WollowsHollow,
         [[Rule.Jump, Rule.Headbutt, Rule.Slam, Rule.Climb_Or_Headbutt],
          [Rule.CanReachCagedRooftops, Rule.CanGetHurt]],
     ),
@@ -632,12 +633,12 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeHollowTreeFishTimer, 257,
         region_names.WollowsHollowTree,
-        [Rule.Jump, Rule.Headbutt, Rule.Swim],
+        [Rule.Jump, Rule.Headbutt, Rule.Dive],
     ),
     CK64LocationData(
         location_names.CubeHollowTreeSwim, 259,
         region_names.WollowsHollowTree,
-        [Rule.Swim],
+        [Rule.Dive],
     ),
     CK64LocationData(
         location_names.CubeHollowTreeNearMetalWorm, 258,
@@ -647,7 +648,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeHollowGraveyardSpiderCaveDrill, 260,
         region_names.WollowsHollowGraveyard,
-        [Rule.Swim, Rule.BombBird, Rule.Platforming, Rule.Slam, Rule.Drill],
+        [Rule.Dive, Rule.BombBird, Rule.Platforming, Rule.Slam, Rule.Drill],
     ),
     # endregion
     # region Hollow Screws
@@ -841,7 +842,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.BottleCapHollowGraveyardInsideWetTree, 317,
         region_names.WollowsHollowGraveyard,
-        [Rule.Swim, Rule.Jump, Rule.WallJump, Rule.Climb],
+        [Rule.Dive, Rule.Jump, Rule.WallJump, Rule.Climb],
     ),
     CK64LocationData(
         location_names.BottleCapHollowRavineClimb, 311,
@@ -1011,7 +1012,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.DogGod, None,
         region_names.SomeOtherPlace,
-        [Rule.CanUseAllVoidScrews, Rule.TowerMovement, Rule.Swim],
+        [Rule.CanUseAllVoidScrews, Rule.TowerMovement, Rule.Dive],
         _type=CornKidzLocationType.EVENT
     ),
     # endregion
@@ -1066,7 +1067,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.Achievement_HighBreadHeaven, 9,
         region_names.SomeOtherPlace,
-        [Rule.CanUseAllVoidScrews, Rule.TowerMovement, Rule.Swim],
+        [Rule.CanUseAllVoidScrews, Rule.TowerMovement, Rule.Dive],
         _type=CornKidzLocationType.ACHIEVEMENT,
     ),
     CK64LocationData(

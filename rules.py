@@ -36,30 +36,33 @@ def get_xp_count(state: CollectionState, player: int, options: CornKidz64Options
 #     curr_xp = math.floor((total_xp / options.xp_count) * state.count(Item.XP.value, player))
 #     return curr_xp
 
+@rule(CK64Rule.OpenWollowsHollow)
+def OpenWollowsHollow(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
+    return options.open_wollows_hollow.value == 1
 
 @rule(CK64Rule.Level2)
 def Level2(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 70
+    return get_xp_count(state, player, options) >= 70 and Headbutt(state, world, player, options)
 
 
 @rule(CK64Rule.Level3)
 def Level3(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 140
+    return get_xp_count(state, player, options) >= 140 and Headbutt(state, world, player, options)
 
 
 @rule(CK64Rule.Level4)
 def Level4(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 200
+    return get_xp_count(state, player, options) >= 200 and Headbutt(state, world, player, options)
 
 
 @rule(CK64Rule.Level5)
 def Level5(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 300
+    return get_xp_count(state, player, options) >= 300 and Headbutt(state, world, player, options)
 
 
 @rule(CK64Rule.Level6)
 def Level6(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 360
+    return get_xp_count(state, player, options) >= 360 and Headbutt(state, world, player, options)
 
 
 @rule(CK64Rule.AllBottlecaps)
@@ -109,53 +112,46 @@ def AnyHPItem(state: CollectionState, world: MultiWorld, player: int, options: C
     return state.has(item_names.MegaDreamSoda, player)
 
 
-# ToDo: implement movement rando
 @rule(CK64Rule.Jump)
 def Jump(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return state.has(item_names.Jump, player) or options.can_jump
+    # return (not options.movesanity) or state.has(item_names.Jump, player)
     return True
 
 
 @rule(CK64Rule.Punch)
 def Punch(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return state.has(item_names.Punch, player) or options.can_punch
-    return True
+   return (not options.movesanity) or state.has(item_names.Punch, player)
 
 
 @rule(CK64Rule.Climb)
 def Climb(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return state.has(item_names.Climb, player) or options.can_climb
-    return True
+    return (not options.movesanity) or state.has(item_names.Climb, player)
 
 
 @rule(CK64Rule.Slam)
 def Slam(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return state.has(item_names.Slam, player) or options.can_ground_pound
-    return True
+    return (not options.movesanity) or state.has(item_names.Slam, player)
 
 
 @rule(CK64Rule.Headbutt)
 def Headbutt(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return state.has(item_names.Headbutt, player) or options.can_headbutt
-    return True
+    return (not options.movesanity) or state.has(item_names.Headbutt, player)
 
 
 @rule(CK64Rule.WallJump)
 def WallJump(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return state.has(item_names.WallJump, player) or options.can_wall_jump
-    return True
+    return (not options.movesanity) or state.has(item_names.WallJump, player)
 
 
-@rule(CK64Rule.Swim)
-def Swim(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return state.has(item_names.Swim, player) or options.can_swim
+@rule(CK64Rule.Dive)
+def Dive(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
+    # return (not options.movesanity) or state.has(item_names.Swim, player)
     return True
 
 
 @rule(CK64Rule.Crouch)
 def Crouch(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return state.has(item_names.Crouch, player) or options.can_crouch
-    return True
+    return (not options.movesanity) or state.has(item_names.Crouch, player)
 
 
 @rule(CK64Rule.Drill)
@@ -391,7 +387,7 @@ def CanEnterFountain(state: CollectionState, world: MultiWorld, player: int, opt
         Jump(state, world, player, options) and \
         Headbutt(state, world, player, options) and \
         (Climb(state, world, player, options) or WallJump(state, world, player, options)) and \
-        Swim(state, world, player, options)
+        Dive(state, world, player, options)
 
 
 @rule(CK64Rule.CanClimbInteriorTree)
@@ -422,22 +418,26 @@ def BatTreeSideRoomCollectables(state: CollectionState, world: MultiWorld, playe
 
 @rule(CK64Rule.CrankMonsterPark)
 def CrankMonsterPark(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return not options.cranksanity or state.has(item_names.CrankMonsterPark, player)
+    return not options.cranksanity or state.has(item_names.CrankMonsterPark, player) and \
+        Headbutt(state, world, player, options)
 
 
 @rule(CK64Rule.CrankHollowDragonWall)
 def CrankHollowDragonWall(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return not options.cranksanity or state.has(item_names.CrankHollowElevator, player)
+    return not options.cranksanity or state.has(item_names.CrankHollowElevator, player) and \
+        Headbutt(state, world, player, options)
 
 
 @rule(CK64Rule.CrankZooSide)
 def CrankZooSide(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return not options.cranksanity or state.has(item_names.CrankHollowZooWall, player)
+    return not options.cranksanity or state.has(item_names.CrankHollowZooWall, player) and \
+        Headbutt(state, world, player, options)
 
 
 @rule(CK64Rule.CrankAnxietyTower)
 def CrankAnxietyTower(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return not options.cranksanity or state.has(item_names.CrankAnxietyTower, player)
+    return not options.cranksanity or state.has(item_names.CrankAnxietyTower, player) and \
+        Headbutt(state, world, player, options)
 
 
 @rule(CK64Rule.CanCleanZoo)
@@ -466,6 +466,14 @@ def CanDefeatOwlloh(state: CollectionState, world: MultiWorld, player: int, opti
         Level4(state, world, player, options)
 
 
+@rule(CK64Rule.MonsterParkHouseButtons)
+def MonsterParkHouseButtons(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
+    return Jump(state, world, player, options) and \
+        Headbutt(state, world, player, options) and \
+        WallJump_Or_Climb(state, world, player, options) and \
+        Slam(state, world, player, options)
+
+
 @rule(CK64Rule.AnxietyTowerChecks)
 def AnxietyTowerChecks(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
     return PostOwllohDefeated(state, world, player, options) and \
@@ -481,6 +489,6 @@ def PostOwllohDefeated(state: CollectionState, world: MultiWorld, player: int, o
 @rule(CK64Rule.CanAccessGraveyardBomb)
 def CanAccessGraveyardBomb(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
     return CanReachGraveyard(state, world, player, options) and \
-        Swim(state, world, player, options) and \
+        Dive(state, world, player, options) and \
         BombBird(state, world, player, options) and \
         Platforming(state, world, player, options)

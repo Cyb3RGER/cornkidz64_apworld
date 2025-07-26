@@ -47,7 +47,10 @@ region_table: List[CK64RegionData] = [
             CK64EntranceData(region_names.MonsterPark),
             CK64EntranceData(
                 region_names.WollowsHollow,
-                [Rule.CanReachParkTop, Rule.Jump, Rule.WallJump],
+                [
+                    [Rule.CanReachParkTop, Rule.Jump, Rule.WallJump, Rule.Slam, Rule.Headbutt],
+                    [Rule.OpenWollowsHollow]
+                ],
                 [region_names.MonsterParkTop],
             ),
             CK64EntranceData(
@@ -68,7 +71,7 @@ region_table: List[CK64RegionData] = [
         [
             CK64EntranceData(
                 region_names.MonsterParkAcrossLake,
-                [[Rule.Swim],
+                [[Rule.Dive],
                 [Rule.Slam, Rule.Platforming]],
             ),
             CK64EntranceData(
@@ -82,7 +85,7 @@ region_table: List[CK64RegionData] = [
             ),
             CK64EntranceData(
                 region_names.MonsterParkSewers,
-                [Rule.Swim]
+                [Rule.Dive, Rule.Headbutt]
             )
         ]
     ),
@@ -101,7 +104,7 @@ region_table: List[CK64RegionData] = [
         [
             CK64EntranceData(
                 region_names.MonsterParkTop,
-                [Rule.Platforming]
+                [Rule.Platforming, Rule.MonsterParkHouseButtons]
             ),
         ]
     ),
@@ -123,7 +126,7 @@ region_table: List[CK64RegionData] = [
         [
             CK64EntranceData(
                 region_names.WollowsHollowChurch,
-                [Rule.MaxPlatforming, Rule.Slam]
+                [Rule.Jump, Rule.Headbutt, Rule.WallJump_Or_Climb, Rule.Slam]
             ),
             CK64EntranceData(
                 region_names.WollowsHollowMusic,

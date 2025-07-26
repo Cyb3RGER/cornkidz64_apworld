@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from Options import Choice, Range, Toggle, DefaultOnToggle, PerGameCommonOptions, OptionGroup, DeathLinkMixin
+from Options import Choice, Range, Toggle, DefaultOnToggle, PerGameCommonOptions, OptionGroup, DeathLinkMixin, \
+    StartInventoryPool
 
 
 class Goal(Choice):
@@ -69,54 +70,30 @@ class TrapPercentage(Range):
     default = 25
 
 
-class CanJump(DefaultOnToggle):
-    """Determines if Seve can jump by default."""
-    display_name = "can_jump"
+class Movesanity(Toggle):
+    """
+    Adds the following player moves to the item pool:
+    - Punch
+    - Climb
+    - Ground Pound
+    - Headbutt
+    - Wall Jump
+    - Crouch
+    NOTE: This has as high failure rate for worlds with only few filler items or single worlds. Try regenerating or turning on Open Wollow's Hollow to help with these failures.
+    """
+    display_name  = "Movesanity"
 
 
-class CanPunch(DefaultOnToggle):
-    """Determines if Seve can punch by default."""
-    display_name = "can_punch"
-
-
-class CanClimb(DefaultOnToggle):
-    """Determines if Seve can climb ledges or pipes by default."""
-    display_name = "can_climb"
-
-
-class CanGroundPound(DefaultOnToggle):
-    """Determines if Seve can ground pound by default."""
-    display_name = "can_ground_pound"
-
-
-class CanHeadbutt(DefaultOnToggle):
-    """Determines if Seve can headbutt by default."""
-    display_name = "can_headbutt"
-
-
-class CanWallJump(DefaultOnToggle):
-    """Determines if Seve can wall jump by default."""
-    display_name = "can_wall_jump"
-
-
-class CanSwim(DefaultOnToggle):
-    """Determines if Seve can swim underwater by default."""
-    display_name = "can_swim"
-
-
-class CanCrouch(DefaultOnToggle):
-    """Determines if Seve can crouch by default."""
-    display_name = "can_crouch"
-
-
-class OpenMode(Toggle):
-    # ToDo: implement
-    """Determines if all levels should be open form the start"""
-    display_name = "Open Mode"
+class OpenWollowsHollow(Toggle):
+    """
+    Makes Wollow's Hollow accessible from the beginning without any moves needed.
+    """
+    display_name = "Open Wollow's Hollow"
 
 
 @dataclass
 class CornKidz64Options(PerGameCommonOptions, DeathLinkMixin):
+    start_inventory_from_pool: StartInventoryPool
     goal: Goal
     xp_count: XPCount
     xp_item_count: XPItemCount
@@ -126,16 +103,8 @@ class CornKidz64Options(PerGameCommonOptions, DeathLinkMixin):
     fishsanity: Fishsanity
     achievementsanity: Achievementsanity
     trap_percentage: TrapPercentage
-    # ToDo: probably just make a move rando option?
-    # can_jump: CanJump
-    # can_punch: CanPunch
-    # can_climb: CanClimb
-    # can_ground_pound: CanGroundPound
-    # can_headbutt: CanHeadbutt
-    # can_wall_jump: CanWallJump
-    # can_swim: CanSwim
-    # can_crouch: CanCrouch
-    # open_mode: OpenMode
+    movesanity: Movesanity
+    open_wollows_hollow: OpenWollowsHollow
 
 
 corn_kidz_option_groups: list[OptionGroup] = [
@@ -143,7 +112,7 @@ corn_kidz_option_groups: list[OptionGroup] = [
         name="Base Options",
         options=[
             Goal,
-            # OpenMode,
+            OpenWollowsHollow,
             # MaxHP,
             TrapPercentage
         ]
@@ -155,7 +124,7 @@ corn_kidz_option_groups: list[OptionGroup] = [
             Ratsanity,
             Fishsanity,
             Achievementsanity,
-            # Movesanity
+            Movesanity
         ],
     ),
     OptionGroup(

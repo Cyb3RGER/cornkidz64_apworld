@@ -7,7 +7,7 @@ Climb = "Climb"
 Slam = "Slam"
 Headbutt = "Headbutt"
 WallJump = "Wall Jump"
-Swim = "Swim"
+Dive = "Dive"
 Crouch = "Crouch"
 # Upgrades
 Drill = "Drill"  # gives UpgradeItem 1

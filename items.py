@@ -53,7 +53,7 @@ item_table: list[CK64ItemData] = [
         ItemClassification.progression,
     ),
     CK64ItemData(
-        item_names.Swim,
+        item_names.Dive,
         ItemClassification.progression,
     ),
     CK64ItemData(

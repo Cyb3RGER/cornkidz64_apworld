@@ -7,19 +7,20 @@ from BaseClasses import Item, Tutorial, ItemClassification, Region, MultiWorld, 
 from Options import Accessibility
 from worlds.AutoWorld import World, WebWorld
 from .items import item_table, CornKidzItem, lookup_name_to_id as item_name_to_id, get_trap_item_names, get_filler_item_names
-from .locations import location_table, CK64LocationData, lookup_name_to_id as loc_name_to_id, achievement_locations, CornKidzLocation, goal_locations, locked_locations, rat_locations, crank_locations, CornKidzLocationType
+from .locations import location_table, CK64LocationData, lookup_name_to_id as loc_name_to_id, achievement_locations, CornKidzLocation, goal_locations, locked_locations, rat_locations, crank_locations, CornKidzLocationType, fish_locations
 from .options import CornKidz64Options, Goal, corn_kidz_option_groups
 from .regions import region_table, CK64EntranceData, CK64RegionData
 from .rules import rules_to_func
-from .constants import item_names, GameName, region_names, BaseId
+from .constants import item_names, GameName, region_names, BaseId, xp_name_to_value, xp_value_to_name
 
-ck64_version = (0, 0, 4)
+ck64_version = (0, 0, 5)
 
 logger = logging.getLogger("Corn Kidz 64")
 
 class CornKidzWeb(WebWorld):
     theme = "partyTime"
     option_groups = corn_kidz_option_groups
+    rich_text_options_doc = True
     tutorials = [Tutorial(
         "Multiworld Setup Guide",
         "A guide to setting up the Corn Kidz 64 integration for Archipelago multiworld games.",
@@ -49,16 +50,30 @@ class CornKidz(World):
     goal_name = "Defeat Owlloh"
     excluded_locations = field(default_factory=list)
     is_first_mega_soda = True
+    ut_can_gen_without_yaml = True
 
     def __init__(self, multiworld: "MultiWorld", player: int):
         super().__init__(multiworld, player)
+        self.xp_counter = 0
+        self.xp_required = 360
+
 
     def generate_early(self) -> None:
+        if hasattr(self.multiworld, "re_gen_passthrough"):
+            if GameName in self.multiworld.re_gen_passthrough:
+                self.apply_options_from_slot_data(self.multiworld.re_gen_passthrough[GameName])
+
+        if self.options.accessibility == self.options.accessibility.option_minimal:
+            self.xp_required = 200
+            if self.options.goal == Goal.option_anxiety:
+                self.xp_required = 300
+            elif self.options.goal == Goal.option_god:
+                self.xp_required = 360
         if (self.options.goal == Goal.option_god or self.options.accessibility == Accessibility.option_full) and self.options.xp_count < 360:
             logger.warning(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] forcing xp count to 360 because it's required either by goal or accessibility")
             self.options.xp_count.value = 360
-        elif self.options.goal == Goal.option_god and self.options.xp_count < 300:
-            logger.warning(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] forcing xp count to 300 because it's required either by goal")
+        elif self.options.goal == Goal.option_anxiety and self.options.xp_count < 300:
+            logger.warning(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] forcing xp count to 300 because it's required by goal")
             self.options.xp_count.value = 300
 
     def create_filler(self) -> "Item":
@@ -68,10 +83,10 @@ class CornKidz(World):
         return self.random.choice(get_filler_item_names())
 
     def get_xp_items(self):
-        # this is kinda experimental, not sure if this is a good idea
-        current_counts = {10:0, 5:0, 3:0, 1:0}
+        current_counts = {k: 0 for k in xp_value_to_name.keys()}
         diff = self.options.xp_count
-        for v in [10, 5, 3, 1]:
+        # fill the "biggest" items first (fewest items possible for this xp count)
+        for v in sorted(xp_value_to_name.keys(), reverse=True):
             while diff >= v:
                 current_counts[v] += 1
                 diff -= v
@@ -80,8 +95,10 @@ class CornKidz(World):
 
         current_item_count = sum(current_counts.values())
         diff = self.options.xp_item_count - current_item_count
+        # as long as we still need more location, split the current items apart
         while diff > 0:
             made_change = False
+            # smallest first (lowest quantity)
             for v in [3,5,10]:
                 if diff == 0:
                     break
@@ -119,35 +136,38 @@ class CornKidz(World):
                     current_counts[1] += 3
                     diff -= 2
                     made_change = True
+            # we are done, early exit
             if diff == 0:
                 break
+            # prevent infinite loops
             if not made_change:
                 break
 
+        # check location count matches
         total_items = sum(current_counts.values())
         assert total_items <= self.options.xp_item_count, f"Impossible to distribute xp items with current constraints. off by {total_items - self.options.xp_item_count} items"
-        total_xp =sum([k*v for k,v in current_counts.items()])
+        # check xp count matches
+        total_xp = sum([k * v for k, v in current_counts.items()])
         assert total_xp == self.options.xp_count, f"Impossible to distribute xp items with current constraints. off by {sum([k*v for k,v in current_counts.items()]) - self.options.xp_count} xp"
-        #logger.debug(f"calculated item fill: {current_counts}, {self.options.xp_count}->{total_xp}, {self.options.xp_item_count}->{total_items}")
-        #vanilla_proportions = {10:20/134, 5:4/134, 3:15/134, 1:95/134}
-        #new_proportions = {k:v/self.options.xp_item_count for k,v in current_counts.items()}
-        #logger.debug(f"vanilla proportions: {vanilla_proportions}, new proportions: {new_proportions}")
+        # logger.debug(f"calculated item fill: {current_counts}, {self.options.xp_count}->{total_xp}, {self.options.xp_item_count}->{total_items}")
+        # vanilla_proportions = {10:20/134, 5:4/134, 3:15/134, 1:95/134}
+        # new_proportions = {k:v/self.options.xp_item_count for k,v in current_counts.items()}
+        # logger.debug(f"vanilla proportions: {vanilla_proportions}, new proportions: {new_proportions}")
 
-        name_mapping = {1:item_names.XPCube, 3:item_names.RedScrew, 5:item_names.Moth, 10:item_names.XPCrystal}
-        xp_items = [name_mapping[xp_value] for xp_value, amount in current_counts.items() for _ in range(amount)]
+        xp_items = [xp_value_to_name[xp_value] for xp_value, amount in current_counts.items() for _ in range(amount)]
 
         return xp_items
 
     def get_items(self):
-
-        crank_items = [item_names.CrankMonsterPark] + \
+        crank_items: list[str] = [item_names.CrankMonsterPark] + \
             [item_names.CrankHollowElevator] + \
             [item_names.CrankHollowZooWall] + \
             [item_names.CrankAnxietyTower] if self.options.cranksanity else []
-        rat_items = [item_names.Rat] * 6 if self.options.ratsanity else []
-        fish_items = [item_names.Fish] * 3 if self.options.fishsanity else []
-        xp_items = self.get_xp_items()
-        itempool = \
+        rat_items: list[str] = [item_names.Rat] * 6 if self.options.ratsanity else []
+        fish_items: list[str] = [item_names.Fish] * 3 if self.options.fishsanity else []
+        move_items: list[str] = [item_names.Punch, item_names.Climb, item_names.Slam, item_names.Headbutt, item_names.WallJump, item_names.Crouch] if self.options.movesanity else []
+        xp_items: list[str] = self.get_xp_items()
+        itempool: list[str] = \
             [item_names.Drill] + \
             [item_names.FallWarp] + \
             xp_items + \
@@ -160,19 +180,19 @@ class CornKidz(World):
             [item_names.CheeseGrater] + \
             [item_names.MetalWorm] + \
             rat_items + \
-            fish_items
+            fish_items + \
+            move_items
 
-        #so fill rest with junk
+        # fill rest with junk
         junk: int = len(self.multiworld.get_unfilled_locations(self.player)) - len(itempool)
         assert junk >= 0, f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] Generated with too many items ({-junk}). Please tweak your settings to include more location with possible filler items."
         trap: int = round(junk * (self.options.trap_percentage / 100))
         filler: int = junk - trap
-        #logger.info(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] junk: {junk} -> filler {filler} - trap {trap}")
+        # logger.info(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] junk: {junk} -> filler {filler} - trap {trap}")
         itempool += [self.random.choice(get_trap_item_names()) for _ in range(trap)]
         itempool += [self.random.choice(get_filler_item_names()) for _ in range(filler)]
 
-        itempool = list(map(lambda name: self.create_item(name), itempool))
-        return itempool
+        return list(map(lambda name: self.create_item(name), itempool))
 
     def create_item(self, name: str) -> Item:
         item_id = self.item_name_to_id[name]
@@ -180,7 +200,11 @@ class CornKidz(World):
         assert (item_id - BaseId) < len(item_table), f"{name} doesn't have a valid id: {item_id - BaseId} {len(item_table)}"
         item_data = item_table[item_id - BaseId]
         classification = item_data.classification
-        if name == item_names.MegaDreamSoda:
+        if name in xp_name_to_value.keys():
+            if self.xp_counter >= self.xp_required:
+                classification = ItemClassification.useful
+            self.xp_counter += xp_name_to_value[name]
+        elif name == item_names.MegaDreamSoda:
             if not self.options.achievementsanity or not self.is_first_mega_soda:
                 classification = ItemClassification.useful
             self.is_first_mega_soda = False
@@ -193,19 +217,6 @@ class CornKidz(World):
                  # Void screws are useless on non-god runs
                  if self.options.goal <= Goal.option_anxiety:
                      classification = ItemClassification.filler
-            # Todo: make extra xp filler
-            # elif name == CK64ItemName.XP.value:
-            #     # XP stops becoming required at some point,
-            #     # instead only counts as being useful
-            #     xp_required = 200
-            #     if self.options.goal == Goal.option_anxiety:
-            #         xp_required = 300
-            #     elif self.options.goal == Goal.option_god:
-            #         xp_required = 360
-            #     xp_value = 360 / self.options.xp_count
-            #     xp_items_required = math.ceil(xp_required / xp_value)
-            #     if i >= xp_items_required:
-            #         classification = ItemClassification.useful
         # Todo: adjust based on options
         item = CornKidzItem(name, classification, item_id, self.player)
         return item
@@ -231,14 +242,14 @@ class CornKidz(World):
             if location_data in self.excluded_locations:
                 continue
             location = self.multiworld.get_location(location_data.name, self.player)
-            location.access_rule = lambda state, _i=i: test_location(location_table[_i], state, self.multiworld, self.player, self.options)
+            location.access_rule = lambda state, _i=i, mw=self.multiworld, player=self.player, _options=self.options: test_location(location_table[_i], state, mw, player, _options)
 
         # Add entrance rules.
         for i, region_data in enumerate(region_table):
             for o, entrance_data in enumerate(region_data.connects_to):
                 entrance_name = f"{region_data.name} -> {entrance_data.target}"
                 entrance = self.multiworld.get_entrance(entrance_name, self.player)
-                entrance.access_rule = lambda state, _i=i, _o=o: test_entrance(region_table[_i].connects_to[_o], state, self.multiworld, self.player, self.options)
+                entrance.access_rule = lambda state, _i=i, _o=o, mw=self.multiworld, player=self.player, _options=self.options: test_entrance(region_table[_i].connects_to[_o], state, mw, player, _options)
                 for condition in entrance_data.indirect_conditions:
                     self.multiworld.register_indirect_condition(self.multiworld.get_region(condition, self.player), entrance)
 
@@ -293,26 +304,30 @@ class CornKidz(World):
         return {
             "version": ".".join(map(str, ck64_version)),
             "goal": self.options.goal.value,
-            #"xp_count": self.options.xp_count.value,
+            "xp_count": self.options.xp_count.value,
+            "xp_item_count": self.options.xp_item_count.value,
             #"max_hp": self.options.max_hp.value,
             "cranksanity": self.options.cranksanity.value,
             "ratsanity": self.options.ratsanity.value,
             "fishsanity": self.options.fishsanity.value,
             "achievementsanity": self.options.achievementsanity.value,
+            "movesanity": self.options.movesanity.value,
             "trap_percentage": self.options.trap_percentage.value,
-            #"open_mode": self.options.open_mode.value,
+            "open_wollows_hollow": self.options.open_wollows_hollow.value,
             "death_link": self.options.death_link.value,
         }
 
-    def interpret_slot_data(self, slot_data: dict):
-        return_val = None
+    @staticmethod
+    def interpret_slot_data(slot_data: dict):
+        #TODO: version check?
+        return slot_data
+
+    def apply_options_from_slot_data(self, slot_data: dict):
         for k, v in slot_data.items():
             if hasattr(self.options, k):
                 option = getattr(self.options, k)
                 if option.value != v:
                     option.value = v
-                    return_val = True
-        return return_val
 
     def write_spoiler(self, spoiler_handle: TextIO) -> None:
         pass

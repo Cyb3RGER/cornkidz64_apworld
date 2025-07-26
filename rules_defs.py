@@ -1,6 +1,8 @@
 from enum import Enum, auto
 
 class CK64Rule(Enum):
+    OpenWollowsHollow = auto()
+
     Level2 = auto()
     Level3 = auto()
     Level4 = auto()
@@ -24,7 +26,7 @@ class CK64Rule(Enum):
     Slam = auto()
     Headbutt = auto()
     WallJump = auto()
-    Swim = auto()
+    Dive = auto()
     Crouch = auto()
     Drill = auto()
     FallWarp = auto()
@@ -79,6 +81,8 @@ class CK64Rule(Enum):
     CanKillAllFish = auto() # CanClimbInteriorTree and CanAccessGraveyardBomb or Fishsantiy and has 3 Fish
     CanCleanZoo = auto()  # WollowsHollowZoo, ((max platforming, drill, punch) or ratsanity)
     CanDefeatOwlloh = auto()  # CanClimbInteriorTree, Level 4
+
+    MonsterParkHouseButtons = auto() #Jump, Headbutt, WallJump_Or_Climb, Slam
 
     AnxietyTowerChecks = auto()  # PostOwllohDefeated, Level 5, MaxPlatforming
 
