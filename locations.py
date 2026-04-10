@@ -64,7 +64,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CubeParkSlide, 100,
         region_names.MonsterPark,
-        [Rule.Climb, Rule.Jump, Rule.WallJump],
+        [Rule.Jump, Rule.Climb],
     ),
     CK64LocationData(
         location_names.CubeParkUnderSlide, 118,
@@ -679,7 +679,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.ScrewHollowZoo, 207,
         region_names.WollowsHollowZoo,
-        [Rule.MaxPlatforming, Rule.Drill],
+        [Rule.MaxPlatforming, Rule.Drill], #TODO: I think this (and maybe some rats) needs to check for slam if zoo not clean
     ),
     CK64LocationData(
         location_names.ScrewFlippedHollowTreeSideRoom, 204,
@@ -781,7 +781,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.MirrorHollowZooSideCrank, 284,
         region_names.WollowsHollow,
-        [Rule.CrankZooSide, Rule.MaxPlatforming, Rule.Drill, Rule.Crouch],
+        [Rule.MaxPlatforming, Rule.Drill, Rule.Crouch],
     ),
     CK64LocationData(
         location_names.MirrorFlippedHollowDragonCrank, 288,
@@ -879,6 +879,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.VoidScrewHollowSky, 323,
         region_names.WollowsHollowCagedRooftops,
+        [Rule.Slam]
     ),
     CK64LocationData(
         location_names.VoidScrewSomeOtherPlace, 501,
@@ -1124,7 +1125,10 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.Rat2, 2,
         region_names.WollowsHollowZoo,
-        [Rule.Punch, Rule.MaxPlatforming],
+        [
+            [Rule.Punch, Rule.MaxPlatforming],
+            [Rule.Drill, Rule.Slam, Rule.MaxPlatforming],
+        ],
         _type=CornKidzLocationType.RAT,
     ),
     CK64LocationData(

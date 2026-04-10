@@ -95,7 +95,7 @@ region_table: List[CK64RegionData] = [
         [
             CK64EntranceData(
                 region_names.MonsterParkHouseFoyer,
-                [Rule.Platforming]
+                [Rule.Jump, Rule.WallJump, Rule.Headbutt]
             )
         ]
     ),

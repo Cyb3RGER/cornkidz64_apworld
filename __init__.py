@@ -13,8 +13,6 @@ from .regions import region_table, CK64EntranceData, CK64RegionData
 from .rules import rules_to_func
 from .constants import item_names, GameName, region_names, BaseId, xp_name_to_value, xp_value_to_name
 
-ck64_version = (0, 0, 6)
-
 logger = logging.getLogger("Corn Kidz 64")
 
 class CornKidzWeb(WebWorld):
@@ -51,6 +49,7 @@ class CornKidz(World):
     excluded_locations = field(default_factory=list)
     is_first_mega_soda = True
     ut_can_gen_without_yaml = True
+    is_ut = False
 
     def __init__(self, multiworld: "MultiWorld", player: int):
         super().__init__(multiworld, player)
@@ -61,6 +60,7 @@ class CornKidz(World):
     def generate_early(self) -> None:
         if hasattr(self.multiworld, "re_gen_passthrough"):
             if GameName in self.multiworld.re_gen_passthrough:
+                self.is_ut = True
                 self.apply_options_from_slot_data(self.multiworld.re_gen_passthrough[GameName])
 
         if self.options.accessibility == self.options.accessibility.option_minimal:
@@ -200,23 +200,24 @@ class CornKidz(World):
         assert (item_id - BaseId) < len(item_table), f"{name} doesn't have a valid id: {item_id - BaseId} {len(item_table)}"
         item_data = item_table[item_id - BaseId]
         classification = item_data.classification
-        if name in xp_name_to_value.keys():
-            if self.xp_counter >= self.xp_required:
-                classification = ItemClassification.useful
-            self.xp_counter += xp_name_to_value[name]
-        elif name == item_names.MegaDreamSoda:
-            if not self.options.achievementsanity or not self.is_first_mega_soda:
-                classification = ItemClassification.useful
-            self.is_first_mega_soda = False
-        if self.options.accessibility == Accessibility.option_minimal:
-            if name == item_names.CrankAnxietyTower:
-                 # Anxiety tower crank is filler on non-anxiety/god runs
-                 if self.options.goal <= Goal.option_tower:
-                     classification = ItemClassification.filler
-            elif name == item_names.VoidScrew:
-                 # Void screws are useless on non-god runs
-                 if self.options.goal <= Goal.option_anxiety:
-                     classification = ItemClassification.filler
+        if not self.is_ut:
+            if name in xp_name_to_value.keys():
+                if self.xp_counter >= self.xp_required:
+                    classification = ItemClassification.useful
+                self.xp_counter += xp_name_to_value[name]
+            elif name == item_names.MegaDreamSoda:
+                if not self.options.achievementsanity or not self.is_first_mega_soda:
+                    classification = ItemClassification.useful
+                self.is_first_mega_soda = False
+            if self.options.accessibility == Accessibility.option_minimal:
+                if name == item_names.CrankAnxietyTower:
+                     # Anxiety tower crank is filler on non-anxiety/god runs
+                     if self.options.goal <= Goal.option_tower:
+                         classification = ItemClassification.filler
+                elif name == item_names.VoidScrew:
+                     # Void screws are useless on non-god runs
+                     if self.options.goal <= Goal.option_anxiety:
+                         classification = ItemClassification.filler
         # Todo: adjust based on options
         item = CornKidzItem(name, classification, item_id, self.player)
         return item
@@ -302,7 +303,7 @@ class CornKidz(World):
 
     def fill_slot_data(self):
         return {
-            "version": ".".join(map(str, ck64_version)),
+            "version": self.world_version.as_simple_string(),
             "goal": self.options.goal.value,
             "xp_count": self.options.xp_count.value,
             "xp_item_count": self.options.xp_item_count.value,

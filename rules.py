@@ -156,7 +156,7 @@ def Crouch(state: CollectionState, world: MultiWorld, player: int, options: Corn
 
 @rule(CK64Rule.Drill)
 def Drill(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.Drill, player)  # or options.can_drill
+    return state.has(item_names.Drill, player) # or options.can_drill
 
 
 @rule(CK64Rule.FallWarp)
