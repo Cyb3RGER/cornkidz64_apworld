@@ -5,9 +5,8 @@ from typing import TextIO
 
 from BaseClasses import Item, Tutorial, ItemClassification, Region, MultiWorld
 from Options import Accessibility
-from rule_builder.cached_world import CachedRuleBuilderWorld
 from rule_builder.rules import Has
-from worlds.AutoWorld import WebWorld
+from worlds.AutoWorld import WebWorld, World
 from .constants import item_names, GameName, region_names, BaseId, xp_name_to_value, xp_value_to_name, location_names
 from .constants.item_names import *
 from .items import item_table, CornKidzItem, lookup_name_to_id as item_name_to_id, get_trap_item_names, \
@@ -35,7 +34,7 @@ class CornKidzWeb(WebWorld):
     )]
 
 
-class CornKidz(CachedRuleBuilderWorld):
+class CornKidz(World):
     """
     Corn Kidz 64
     The unique aura of bygone 64-bit worlds resurrected in this
@@ -238,14 +237,14 @@ class CornKidz(CachedRuleBuilderWorld):
         for i, location_data in enumerate(location_table):
             if location_data in self.excluded_locations:
                 continue
-            location = self.multiworld.get_location(location_data.name, self.player)
+            location = self.get_location(location_data.name)
             self.set_rule(location, get_logic(location_data.rules))
 
         # Add entrance rules.
         for i, region_data in enumerate(region_table):
             for o, entrance_data in enumerate(region_data.connects_to):
                 entrance_name = f"{region_data.name} -> {entrance_data.target}"
-                entrance = self.multiworld.get_entrance(entrance_name, self.player)
+                entrance = self.get_entrance(entrance_name)
                 self.set_rule(entrance, get_logic(entrance_data.rules))
 
     def create_event(self, event: str, progression: bool = True):
