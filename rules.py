@@ -1,494 +1,200 @@
-from typing import Callable, Dict
-
-from BaseClasses import MultiWorld, CollectionState
-from .options import CornKidz64Options
-from .rules_defs import CK64Rule
-from .constants import item_names, region_names
-
-rules_to_func: Dict[CK64Rule, Callable] = {}
-
-
-def rule(rule: CK64Rule):
-    def decorator(f):
-        def wrapper(*args, **kwargs):
-            return f(*args, **kwargs)
-
-        rules_to_func[rule] = f
-        return wrapper
-
-    return decorator
-
-
-"""
-Rule definitions
-"""
-
-
-def get_xp_count(state: CollectionState, player: int, options: CornKidz64Options) -> int:
-    return state.count(item_names.XPCube, player) + \
-        state.count(item_names.RedScrew, player) * 3 + \
-        state.count(item_names.Moth, player) * 5 + \
-        state.count(item_names.XPCrystal, player) * 10
-
-
-# def get_xp_count(state: CollectionState, player: int, options: CornKidz64Options) -> int:
-#     total_xp = 360
-#     curr_xp = math.floor((total_xp / options.xp_count) * state.count(Item.XP.value, player))
-#     return curr_xp
-
-@rule(CK64Rule.OpenWollowsHollow)
-def OpenWollowsHollow(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return options.open_wollows_hollow.value == 1
-
-@rule(CK64Rule.Level2)
-def Level2(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 70 and Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.Level3)
-def Level3(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 140 and Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.Level4)
-def Level4(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 200 and Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.Level5)
-def Level5(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 300 and Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.Level6)
-def Level6(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return get_xp_count(state, player, options) >= 360 and Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.AllBottlecaps)
-def AllBottlecaps(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.BottleCap, player, 5)
-
-
-@rule(CK64Rule.AllTrashcans)
-def AllTrashcans(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.TrashCan, player, 8)
-
-
-@rule(CK64Rule.AllDiscoBalls)
-def AllDiscoBalls(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.DiscoBall, player, 5)
-
-
-@rule(CK64Rule.CheeseGrater)
-def CheeseGrater(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.CheeseGrater, player)
-
-
-@rule(CK64Rule.AllTombstones)
-def AllTombstones(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.WollowsHollowGraveyard, None, player) and \
-        BreakGroundedObject(state, world, player, options)
-
-
-@rule(CK64Rule.CanUseVoidScrewsButNotLevel6)
-def CanUseFourVoidScrews(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # technically you can only waste 10, if you're not level 6, but that would require looking level 6 behind the 11th Void Screw
-    return state.has(item_names.VoidScrew, player, 11)
-
-
-@rule(CK64Rule.CanUseAllVoidScrews)
-def CanUseAllVoidScrews(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.VoidScrew, player, 11) and Level6(state, world, player, options)
-
-
-@rule(CK64Rule.AnyVoidScrew)
-def AnyVoidScrew(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.VoidScrew, player)
-
-
-@rule(CK64Rule.AnyHPItem)
-def AnyHPItem(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.MegaDreamSoda, player)
-
-
-@rule(CK64Rule.Jump)
-def Jump(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return (not options.movesanity) or state.has(item_names.Jump, player)
-    return True
-
-
-@rule(CK64Rule.Punch)
-def Punch(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-   return (not options.movesanity) or state.has(item_names.Punch, player)
-
-
-@rule(CK64Rule.Climb)
-def Climb(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return (not options.movesanity) or state.has(item_names.Climb, player)
-
-
-@rule(CK64Rule.Slam)
-def Slam(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return (not options.movesanity) or state.has(item_names.Slam, player)
-
-
-@rule(CK64Rule.Headbutt)
-def Headbutt(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return (not options.movesanity) or state.has(item_names.Headbutt, player)
-
-
-@rule(CK64Rule.WallJump)
-def WallJump(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return (not options.movesanity) or state.has(item_names.WallJump, player)
-
-
-@rule(CK64Rule.Dive)
-def Dive(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # return (not options.movesanity) or state.has(item_names.Swim, player)
-    return True
-
-
-@rule(CK64Rule.Crouch)
-def Crouch(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return (not options.movesanity) or state.has(item_names.Crouch, player)
-
-
-@rule(CK64Rule.Drill)
-def Drill(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.Drill, player) # or options.can_drill
-
-
-@rule(CK64Rule.FallWarp)
-def FallWarp(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.FallWarp, player)  # or options.can_fall_warp
-
-
-@rule(CK64Rule.TowerMovement)
-def TowerMovement(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        Punch(state, world, player, options) and \
-        Climb(state, world, player, options) and \
-        Slam(state, world, player, options) and \
-        Headbutt(state, world, player, options) and \
-        WallJump(state, world, player, options) and \
-        Crouch(state, world, player, options) and \
-        Drill(state, world, player, options)
-
-
-@rule(CK64Rule.WallJump_Or_Climb)
-def WallJump_Or_Climb(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return WallJump(state, world, player, options) or \
-        Climb(state, world, player, options)
-
-
-@rule(CK64Rule.Jump_Or_Headbutt)
-def Jump_Or_Headbutt(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) or \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.WallButton)
-def WallButton(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.HighClimb)
-def HighClimb(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        Climb(state, world, player, options)
-
-
-@rule(CK64Rule.Climb_Or_Headbutt)
-def Climb_Or_Headbutt(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Climb(state, world, player, options) or \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.WallJump_Or_Headbutt)
-def WallJump_Or_Headbutt(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return WallJump(state, world, player, options) or \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.WallJump_Or_Slam)
-def WallJump_Or_Slam(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return WallJump(state, world, player, options) or \
-        Slam(state, world, player, options)
-
-
-@rule(CK64Rule.Platforming)
-def Platforming(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        WallJump(state, world, player, options) and \
-        Climb(state, world, player, options)
-
-
-@rule(CK64Rule.MaxPlatforming)
-def MaxPlatforming(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Platforming(state, world, player, options) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.BreakGroundedObject)
-def BreakGroundedObject(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Headbutt(state, world, player, options) and \
-        (Jump(state, world, player, options) or
-         Crouch(state, world, player, options))
-
-
-@rule(CK64Rule.VerticalHeadbutt)
-def VerticalHeadbutt(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Crouch(state, world, player, options) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.BreakCrystal)
-def BreakCrystal(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.BreakTrashcan)
-def BreakTrashcan(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Punch(state, world, player, options) or \
-        (Jump(state, world, player, options) and Headbutt(state, world, player, options)) or \
-        (Crouch(state, world, player, options) and Headbutt(state, world, player, options)) or \
-        (Jump(state, world, player, options) and Slam(state, world, player, options))
-
-
-@rule(CK64Rule.BombBird)
-def BombBird(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return BreakGroundedObject(state, world, player, options)
-
-
-@rule(CK64Rule.OpenChest)
-def OpenChest(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.Chameleon)
-def Chameleon(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.DrillDownwards)
-def DrillDownwards(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        Slam(state, world, player, options) and \
-        Drill(state, world, player, options)
-
-
-@rule(CK64Rule.DrillWall)
-def DrillWall(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        Headbutt(state, world, player, options) and \
-        Drill(state, world, player, options)
-
-
-@rule(CK64Rule.DrillMinimal)
-def DrillMinimal(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Drill(state, world, player, options) and \
-        (Headbutt(state, world, player, options) or
-         Slam(state, world, player, options))
-
-
-@rule(CK64Rule.CanBeatZombieTurtle)
-def CanBeatZombieTurtle(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return BreakGroundedObject(state, world, player, options) and \
-        Punch(state, world, player, options) and \
-        Slam(state, world, player, options)
-
-
-@rule(CK64Rule.CanGetHurt)
-def CanGetHurt(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    # ToDo: this might need a better rule
-    # if options.max_hp > 1:
-    #     return True
-    # return state.has(item_names.MegaDreamSoda, player)
-    return True
-
-
-@rule(CK64Rule.DragonPlatforming)
-def DragonPlatforming(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return CrankHollowDragonWall(state, world, player, options) and \
-        Jump(state, world, player, options) and \
-        WallJump(state, world, player, options) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.CanFreeHauntedHouseBird)
-def CanFreeHauntedHouseBird(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.WollowsHollowHouseTop, None, player) and \
-        Jump(state, world, player, options) and \
-        Slam(state, world, player, options) and \
-        CanBeatZombieTurtle(state, world, player, options)
-
-
-@rule(CK64Rule.CanUseMetalWorm)
-def CanUseMetalWorm(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.has(item_names.MetalWorm, player) and \
-        (CanCleanZoo(state, world, player, options) or CanGetHurt(state, world, player, options)) and \
-        Jump(state, world, player, options) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.CanReachAttic)
-def CanReachAttic(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return (Platforming(state, world, player, options) and VerticalHeadbutt(state, world, player, options)) or \
-        (CanReachParkTop(state, world, player, options) and Jump(state, world, player, options) and
-         Climb(state, world, player, options) and Headbutt(state, world, player, options))
-
-
-@rule(CK64Rule.CanReachParkTop)
-def CanReachParkTop(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.MonsterParkTop, None, player)
-
-
-@rule(CK64Rule.CanReachRooftops)
-def CanReachRooftops(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.WollowsHollowRooftops, None, player)
-
-
-@rule(CK64Rule.CanReachCagedRooftops)
-def CanReachCagedRooftops(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.WollowsHollowCagedRooftops, None, player)
-
-
-@rule(CK64Rule.CanReachGraveyard)
-def CanReachGraveyard(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.WollowsHollowGraveyard, None, player)
-
-
-@rule(CK64Rule.CanReachGraveyardTop)
-def CanReachGraveyardTop(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.WollowsHollowAboveGraveyard, None, player)
-
-
-@rule(CK64Rule.CanReachSpinnyChamber)
-def CanReachSpinnyChamber(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.WollowsHollowDrillChamber, None, player) and \
-        Slam(state, world, player, options) and \
-        Drill(state, world, player, options)
-
-
-@rule(CK64Rule.CanReachFlippedHollow)
-def CanReachFlippedHollow(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return CanReachSpinnyChamber(state, world, player, options) and \
-        AllDiscoBalls(state, world, player, options)
-
-
-@rule(CK64Rule.CanEnterFountain)
-def CanEnterFountain(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return CanReachFlippedHollow(state, world, player, options) and \
-        Jump(state, world, player, options) and \
-        Headbutt(state, world, player, options) and \
-        (Climb(state, world, player, options) or WallJump(state, world, player, options)) and \
-        Dive(state, world, player, options)
-
-
-@rule(CK64Rule.CanClimbInteriorTree)
-def CanClimbInteriorTree(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.WollowsHollowTree, None, player) and \
-        MaxPlatforming(state, world, player, options) and \
-        Slam(state, world, player, options) and \
-        Drill(state, world, player, options)
-
-
-@rule(CK64Rule.BatTreeSideRoom)
-def BatTreeSideRoom(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return CanReachFlippedHollow(state, world, player, options) and \
-        CrankZooSide(state, world, player, options) and \
-        Jump(state, world, player, options) and \
-        Drill(state, world, player, options) and \
-        Headbutt(state, world, player, options) and \
-        WallJump(state, world, player, options)
-
-
-@rule(CK64Rule.BatTreeSideRoomCollectables)
-def BatTreeSideRoomCollectables(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return state.can_reach(region_names.WollowsHollowTreeSideRoom, None, player) and \
-        (Slam(state, world, player, options) or
-         WallJump(state, world, player, options)) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.CrankMonsterPark)
-def CrankMonsterPark(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return not options.cranksanity or state.has(item_names.CrankMonsterPark, player) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.CrankHollowDragonWall)
-def CrankHollowDragonWall(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return not options.cranksanity or state.has(item_names.CrankHollowElevator, player) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.CrankZooSide)
-def CrankZooSide(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return not options.cranksanity or state.has(item_names.CrankHollowZooWall, player) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.CrankAnxietyTower)
-def CrankAnxietyTower(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return not options.cranksanity or state.has(item_names.CrankAnxietyTower, player) and \
-        Headbutt(state, world, player, options)
-
-
-@rule(CK64Rule.CanCleanZoo)
-def CanCleanZoo(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    if options.ratsanity:
-        return state.can_reach(region_names.WollowsHollowZoo, None, player) and \
-            state.has(item_names.Rat, player, 6)
+import dataclasses
+from enum import Enum
+from typing import override, TYPE_CHECKING
+
+from BaseClasses import CollectionState
+from NetUtils import JSONMessagePart
+from rule_builder.options import OptionFilter
+from rule_builder.rules import Rule, False_, True_, Has, Filtered, CanReachRegion, And, Or
+from worlds.cornkidz64.constants import item_names, region_names, GameName
+from worlds.cornkidz64.options import Movesanity, OpenWollowsHollow, Cranksanity, Fishsanity, Ratsanity
+
+if TYPE_CHECKING:
+    from worlds.cornkidz64 import CornKidz
+
+
+# Helper to convert your List[List[CK64Rule]] into a Rule Builder Tree
+def get_logic(dnf_list) -> Rule["CornKidz"]:
+    if not dnf_list:
+        return True_()
+
+    or_clauses = []
+    for and_list in dnf_list:
+        if len(and_list) == 1:
+            and_clause = and_list[0].value
+        elif len(and_list) == 0:
+            and_clause = True_()
+        else:
+            and_clause = And(*[r.value for r in and_list])
+        or_clauses.append(and_clause)
+    if len(or_clauses) == 1:
+        return or_clauses[0]
+    elif len(or_clauses) == 0:
+        return True_()
     else:
-        return state.can_reach(region_names.WollowsHollowZoo, None, player) and \
-            MaxPlatforming(state, world, player, options) and \
-            Drill(state, world, player, options) and \
-            Punch(state, world, player, options)
+        return Or(*or_clauses)
 
 
-@rule(CK64Rule.CanKillAllFish)
-def CanKillAllFish(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    if options.fishsanity:
-        return state.has(item_names.Fish, player, 3)
-    else:
-        return CanClimbInteriorTree(state, world, player, options) and CanAccessGraveyardBomb(state, world, player, options)
+level_vals = {
+    1: 0,
+    2: 70,
+    3: 140,
+    4: 200,
+    5: 300,
+    6: 360,
+}
+
+@dataclasses.dataclass()
+class HasLevel(Rule["CornKidz"], game=GameName):
+    level: int = 1
+
+    @override
+    def _instantiate(self, world: "CornKidz") -> Rule.Resolved:
+        return self.Resolved(
+            self.level,
+            player=world.player,
+            caching_enabled=getattr(world, "rule_caching_enabled", False),
+        )
+
+    class Resolved(Rule.Resolved):
+        level: int = 1
+
+        @override
+        def _evaluate(self, state: CollectionState) -> bool:
+            return state.count(item_names.XPCube, self.player) + \
+                    state.count(item_names.RedScrew, self.player) * 3 + \
+                    state.count(item_names.Moth, self.player) * 5 + \
+                    state.count(item_names.XPCrystal, self.player) * 10 >= level_vals[self.level]
+
+        @override
+        def item_dependencies(self) -> dict[str, set[int]]:
+            return {item_names.XPCube: {id(self)}}
+
+        @override
+        def explain_json(self, state: CollectionState | None = None) -> list[JSONMessagePart]:
+            verb = "Missing " if state and not self(state) else "Has "
+            messages: list[JSONMessagePart] = [{"type": "text", "text": verb}]
+            messages.append({"type": "color", "color": "cyan", "text": str(level_vals[self.level])})
+            messages.append({"type": "text", "text": "x "})
+            if state:
+                color = "green" if self(state) else "salmon"
+                messages.append({"type": "color", "color": color, "text": item_names.XPCube})
+            else:
+                messages.append({"type": "item_name", "flags": 0b001, "text": item_names.XPCube, "player": self.player})
+            return messages
+
+        @override
+        def explain_str(self, state: CollectionState | None = None) -> str:
+            if state is None:
+                return str(self)
+            prefix = "Has" if self(state) else "Missing"
+            count = f"{level_vals[self.level]}x "
+            return f"{prefix} {count}{item_names.XPCube}"
+
+        @override
+        def __str__(self) -> str:
+            count = f"{level_vals[self.level]}x "
+            return f"Has {count}{item_names.XPCube}"
 
 
-@rule(CK64Rule.CanDefeatOwlloh)
-def CanDefeatOwlloh(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return CanClimbInteriorTree(state, world, player, options) and \
-        Level4(state, world, player, options)
+class CK64Rule(Enum):
+    value: Rule
+
+    OpenWollowsHollow = True_(options=[OptionFilter(OpenWollowsHollow, OpenWollowsHollow.option_true)])
+
+    Jump = True_()
+    Dive = True_()
+    Punch = Has(item_names.Punch, options=[OptionFilter(Movesanity, Movesanity.option_true)], filtered_resolution=True)
+    Climb = Has(item_names.Climb, options=[OptionFilter(Movesanity, Movesanity.option_true)], filtered_resolution=True)
+    Slam = Has(item_names.Slam, options=[OptionFilter(Movesanity, Movesanity.option_true)], filtered_resolution=True)
+    Headbutt = Has(item_names.Headbutt, options=[OptionFilter(Movesanity, Movesanity.option_true)], filtered_resolution=True)
+    WallJump =Has(item_names.WallJump, options=[OptionFilter(Movesanity, Movesanity.option_true)], filtered_resolution=True)
+    Crouch = Has(item_names.Crouch, options=[OptionFilter(Movesanity, Movesanity.option_true)], filtered_resolution=True)
+    Drill = Has(item_names.Drill)
+
+    Level2 = HasLevel(2) & Headbutt
+    Level3 = HasLevel(3) & Headbutt
+    Level4 = HasLevel(4) & Headbutt
+    Level5 = HasLevel(5) & Headbutt
+    Level6 = HasLevel(6) & Headbutt
+
+    AllBottlecaps = Has(item_names.BottleCap, count=5)
+    AllTrashcans = Has(item_names.TrashCan, count=8)
+    AllDiscoBalls = Has(item_names.DiscoBall, count=5)
+    CheeseGrater = Has(item_names.CheeseGrater)
 
 
-@rule(CK64Rule.MonsterParkHouseButtons)
-def MonsterParkHouseButtons(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return Jump(state, world, player, options) and \
-        Headbutt(state, world, player, options) and \
-        WallJump_Or_Climb(state, world, player, options) and \
-        Slam(state, world, player, options)
+    CanUseVoidScrewsButNotLevel6 = Has(item_names.VoidScrew, count=11)
+    CanUseAllVoidScrews = Has(item_names.VoidScrew, count=11) & Level6
+    AnyVoidScrew = Has(item_names.VoidScrew)
+    AnyHPItem = Has(item_names.MegaDreamSoda)
+
+    TowerMovement = Jump & Punch & Climb & Slam & Headbutt & WallJump & Crouch & Drill
+
+    WallJump_Or_Climb = WallJump | Climb
+    Jump_Or_Headbutt = Jump | Headbutt
+    WallButton = Jump & Headbutt
+    HighClimb = Jump & Climb
+    Climb_Or_Headbutt = Climb | Headbutt
+    WallJump_Or_Headbutt = WallJump | Headbutt
+    WallJump_Or_Slam = WallJump | Slam
+    Platforming = Jump & WallJump & Climb
+    MaxPlatforming = Platforming & Headbutt
+    BreakGroundedObject = Headbutt & (Jump | Crouch)
+    VerticalHeadbutt = Crouch & Headbutt
+    BreakCrystal = Jump & Headbutt
+    BreakTrashcan = Punch | (Jump & Headbutt) | (Crouch & Headbutt) | (Jump & Slam)
+    BombBird = BreakGroundedObject
+    OpenChest = WallButton
+    Chameleon = WallButton
+    DrillDownwards = Jump & Slam & Drill
+    DrillWall = Jump & Headbutt & Drill
+    DrillMinimal = Jump & Drill & (Headbutt | Slam)
+    CanBeatZombieTurtle = BreakGroundedObject & Punch & Slam
+    CanGetHurt = True_()
+
+    CrankMonsterPark = Has(item_names.CrankMonsterPark, options=[OptionFilter(Cranksanity, Cranksanity.option_true)], filtered_resolution=True) & WallButton
+    CrankHollowDragonWall = Has(item_names.CrankHollowElevator, options=[OptionFilter(Cranksanity, Cranksanity.option_true)], filtered_resolution=True) & WallButton
+    CrankZooSide = Has(item_names.CrankHollowZooWall, options=[OptionFilter(Cranksanity, Cranksanity.option_true)], filtered_resolution=True) & WallButton
+    CrankAnxietyTower = Has(item_names.CrankAnxietyTower, options=[OptionFilter(Cranksanity, Cranksanity.option_true)], filtered_resolution=True) & WallButton
+
+    DragonPlatforming = CrankHollowDragonWall & Jump & WallJump & Headbutt
+    CanFreeHauntedHouseBird = CanReachRegion(region_names.WollowsHollowHouseTop) & Jump & Slam & CanBeatZombieTurtle
+
+    AllTombstones = CanReachRegion(region_names.WollowsHollowGraveyard) & BreakGroundedObject
+
+    CanReachParkTop = CanReachRegion(region_names.MonsterParkTop)
+    CanReachAttic = (Platforming & VerticalHeadbutt) | (CanReachParkTop & Jump & Climb & Headbutt)
+
+    CanReachRooftops = CanReachRegion(region_names.WollowsHollowRooftops)
+    CanReachCagedRooftops = CanReachRegion(region_names.WollowsHollowCagedRooftops)
+    CanReachGraveyard = CanReachRegion(region_names.WollowsHollowGraveyard)
+    CanReachGraveyardTop = CanReachRegion(region_names.WollowsHollowAboveGraveyard)
+    CanReachSpinnyChamber = CanReachRegion(region_names.WollowsHollowDrillChamber) & Slam & Drill
+    CanReachFlippedHollow = CanReachSpinnyChamber & AllDiscoBalls
+    CanEnterFountain = CanReachFlippedHollow & Jump & Headbutt & (Climb | WallJump) & Dive
+    CanClimbInteriorTree = CanReachRegion(region_names.WollowsHollowTree) & MaxPlatforming & Slam & Drill
+
+    BatTreeSideRoom = CanReachFlippedHollow & CrankZooSide & Jump & Drill & Headbutt & WallJump
+    BatTreeSideRoomCollectables = CanReachRegion(region_names.WollowsHollowTreeSideRoom) & (Slam | WallJump) & Headbutt
+
+    CanAccessGraveyardBomb = CanReachGraveyard & Dive & BombBird & Platforming
+    CanKillAllFish = (
+            Has(item_names.Fish, count=3, options=[OptionFilter(Fishsanity, Movesanity.option_true)])
+            | Filtered(CanClimbInteriorTree & CanAccessGraveyardBomb, options=[OptionFilter(Fishsanity, Movesanity.option_false)])
+    )
+
+    CanCleanZoo = CanReachRegion(region_names.WollowsHollowZoo) & (
+            Has(item_names.Rat, count=6, options=[OptionFilter(Ratsanity, Movesanity.option_true)])
+            | Filtered(MaxPlatforming & Drill & Punch, options=[OptionFilter(Ratsanity, Movesanity.option_false)])
+    )
+    CanDefeatOwlloh = CanClimbInteriorTree & Level4
+    CanUseMetalWorm = Has(item_names.MetalWorm) & (CanCleanZoo | CanGetHurt) & Jump & Headbutt
+
+    MonsterParkHouseButtons = WallButton & WallJump_Or_Climb & Slam
+
+    PostOwllohDefeated = CanDefeatOwlloh
+
+    AnxietyTowerChecks = PostOwllohDefeated & Level5 & MaxPlatforming
 
 
-@rule(CK64Rule.AnxietyTowerChecks)
-def AnxietyTowerChecks(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return PostOwllohDefeated(state, world, player, options) and \
-        Level5(state, world, player, options) and \
-        TowerMovement(state, world, player, options)
-
-
-@rule(CK64Rule.PostOwllohDefeated)
-def PostOwllohDefeated(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return CanDefeatOwlloh(state, world, player, options)
-
-
-@rule(CK64Rule.CanAccessGraveyardBomb)
-def CanAccessGraveyardBomb(state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options):
-    return CanReachGraveyard(state, world, player, options) and \
-        Dive(state, world, player, options) and \
-        BombBird(state, world, player, options) and \
-        Platforming(state, world, player, options)

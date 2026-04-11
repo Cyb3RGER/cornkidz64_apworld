@@ -3,15 +3,21 @@ import logging
 from dataclasses import field
 from typing import TextIO
 
-from BaseClasses import Item, Tutorial, ItemClassification, Region, MultiWorld, CollectionState
+from BaseClasses import Item, Tutorial, ItemClassification, Region, MultiWorld
 from Options import Accessibility
-from worlds.AutoWorld import World, WebWorld
-from .items import item_table, CornKidzItem, lookup_name_to_id as item_name_to_id, get_trap_item_names, get_filler_item_names
-from .locations import location_table, CK64LocationData, lookup_name_to_id as loc_name_to_id, achievement_locations, CornKidzLocation, goal_locations, locked_locations, rat_locations, crank_locations, CornKidzLocationType, fish_locations
+from rule_builder.cached_world import CachedRuleBuilderWorld
+from rule_builder.rules import Has
+from worlds.AutoWorld import WebWorld
+from .constants import item_names, GameName, region_names, BaseId, xp_name_to_value, xp_value_to_name, location_names
+from .constants.item_names import *
+from .items import item_table, CornKidzItem, lookup_name_to_id as item_name_to_id, get_trap_item_names, \
+    get_filler_item_names
+from .locations import location_table, CK64LocationData, lookup_name_to_id as loc_name_to_id, achievement_locations, \
+    CornKidzLocation, goal_locations, locked_locations, rat_locations, crank_locations, CornKidzLocationType, \
+    fish_locations
 from .options import CornKidz64Options, Goal, corn_kidz_option_groups
 from .regions import region_table, CK64EntranceData, CK64RegionData
-from .rules import rules_to_func
-from .constants import item_names, GameName, region_names, BaseId, xp_name_to_value, xp_value_to_name
+from .rules import get_logic, CK64Rule
 
 logger = logging.getLogger("Corn Kidz 64")
 
@@ -29,7 +35,7 @@ class CornKidzWeb(WebWorld):
     )]
 
 
-class CornKidz(World):
+class CornKidz(CachedRuleBuilderWorld):
     """
     Corn Kidz 64
     The unique aura of bygone 64-bit worlds resurrected in this
@@ -50,6 +56,8 @@ class CornKidz(World):
     is_first_mega_soda = True
     ut_can_gen_without_yaml = True
     is_ut = False
+
+    item_mapping = {k: item_names.XPCube for k in xp_name_to_value.keys()}
 
     def __init__(self, multiworld: "MultiWorld", player: int):
         super().__init__(multiworld, player)
@@ -226,33 +234,19 @@ class CornKidz(World):
         self.multiworld.itempool += self.get_items()
 
     def set_rules(self):
-        def test_location(location_data: CK64LocationData, state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options) -> bool:
-            res = True
-            if location_data.rules:
-                res = any(all(rules_to_func[_and](state, world, player, options) for _and in _or) for _or in location_data.rules)
-            return res
-
-        def test_entrance(entrance_data: CK64EntranceData, state: CollectionState, world: MultiWorld, player: int, options: CornKidz64Options) -> bool:
-            res = True
-            if entrance_data.rules:
-                res = any(all(rules_to_func[_and](state, world, player, options) for _and in _or) for _or in entrance_data.rules)
-            return res
-
         # Add location rules.
         for i, location_data in enumerate(location_table):
             if location_data in self.excluded_locations:
                 continue
             location = self.multiworld.get_location(location_data.name, self.player)
-            location.access_rule = lambda state, _i=i, mw=self.multiworld, player=self.player, _options=self.options: test_location(location_table[_i], state, mw, player, _options)
+            self.set_rule(location, get_logic(location_data.rules))
 
         # Add entrance rules.
         for i, region_data in enumerate(region_table):
             for o, entrance_data in enumerate(region_data.connects_to):
                 entrance_name = f"{region_data.name} -> {entrance_data.target}"
                 entrance = self.multiworld.get_entrance(entrance_name, self.player)
-                entrance.access_rule = lambda state, _i=i, _o=o, mw=self.multiworld, player=self.player, _options=self.options: test_entrance(region_table[_i].connects_to[_o], state, mw, player, _options)
-                for condition in entrance_data.indirect_conditions:
-                    self.multiworld.register_indirect_condition(self.multiworld.get_region(condition, self.player), entrance)
+                self.set_rule(entrance, get_logic(entrance_data.rules))
 
     def create_event(self, event: str, progression: bool = True):
         return CornKidzItem(event, ItemClassification.progression if progression else ItemClassification.filler, None, self.player)
@@ -292,7 +286,7 @@ class CornKidz(World):
             if location_data.name == goal_locations[self.options.goal]:
                 self.goal_name = location_data.name
                 location.place_locked_item(self.create_event(self.goal_name))
-                self.multiworld.completion_condition[self.player] = lambda state, _i=i: state.has(self.goal_name, self.player)
+                self.set_completion_rule(Has(self.goal_name))
                 placed_goal = True
             elif location_data.name in locked_locations:
                 location.place_locked_item(self.create_event(location_data.name, False))
@@ -333,7 +327,29 @@ class CornKidz(World):
     def write_spoiler(self, spoiler_handle: TextIO) -> None:
         pass
 
+    def dump_logic(self, output_directory:str):
+        import json
+        logic = {
+            "locations": {},
+            "entrances": {}
+        }
+
+        # Add location rules.
+        for i, location_data in enumerate(location_table):
+            logic["locations"][location_data.name] = get_logic(location_data.rules).to_dict()
+
+        # Add entrance rules.
+        for i, region_data in enumerate(region_table):
+            for o, entrance_data in enumerate(region_data.connects_to):
+                entrance_name = f"{region_data.name} -> {entrance_data.target}"
+                logic["entrances"][entrance_name] = get_logic(entrance_data.rules).to_dict()
+
+        with open(f'{output_directory}/ck64_logic_dump.json', 'w') as f:
+            json.dump(logic, f, indent=2)
+
+
     def generate_output(self, output_directory: str) -> None:
+        # self.dump_logic(output_directory)
         # import Utils
         # Utils.visualize_regions(self.get_region(region_names.Menu), f'{output_directory}/{self.multiworld.get_out_file_name_base(self.player)}.puml')
         # ToDo: remove; dev only
