@@ -6,8 +6,9 @@ from BaseClasses import CollectionState
 from NetUtils import JSONMessagePart
 from rule_builder.options import OptionFilter
 from rule_builder.rules import Rule, False_, True_, Has, Filtered, CanReachRegion, And, Or
-from worlds.cornkidz64.constants import item_names, region_names, GameName
-from worlds.cornkidz64.options import Movesanity, OpenWollowsHollow, Cranksanity, Fishsanity, Ratsanity
+from .constants import item_names, region_names, GameName
+from .options import Movesanity, OpenWollowsHollow, Cranksanity, Fishsanity, Ratsanity, Switchsanity, \
+    TestCubesanity
 
 if TYPE_CHECKING:
     from worlds.cornkidz64 import CornKidz
@@ -124,8 +125,8 @@ class CK64Rule(Enum):
     CheeseGrater = Has(item_names.CheeseGrater)
 
 
-    CanUseVoidScrewsButNotLevel6 = Has(item_names.VoidScrew, count=11)
-    CanUseAllVoidScrews = Has(item_names.VoidScrew, count=11) & Level6
+    CanUseAllVoidScrews = Has(item_names.VoidScrew, count=11)
+    CanUseAllVoidScrewsAndLevel6 = Has(item_names.VoidScrew, count=11) & Level6
     AnyVoidScrew = Has(item_names.VoidScrew)
     AnyHPItem = Has(item_names.MegaDreamSoda)
 
@@ -180,13 +181,13 @@ class CK64Rule(Enum):
 
     CanAccessGraveyardBomb = CanReachGraveyard & Dive & BombBird & Platforming
     CanKillAllFish = (
-            Has(item_names.Fish, count=3, options=[OptionFilter(Fishsanity, Movesanity.option_true)])
-            | Filtered(CanClimbInteriorTree & CanAccessGraveyardBomb, options=[OptionFilter(Fishsanity, Movesanity.option_false)])
+            Has(item_names.Fish, count=3, options=[OptionFilter(Fishsanity, Fishsanity.option_true)])
+            | Filtered(CanClimbInteriorTree & CanAccessGraveyardBomb, options=[OptionFilter(Fishsanity, Fishsanity.option_false)])
     )
 
     CanCleanZoo = CanReachRegion(region_names.WollowsHollowZoo) & (
-            Has(item_names.Rat, count=6, options=[OptionFilter(Ratsanity, Movesanity.option_true)])
-            | Filtered(MaxPlatforming & Drill & Punch, options=[OptionFilter(Ratsanity, Movesanity.option_false)])
+            Has(item_names.Rat, count=6, options=[OptionFilter(Ratsanity, Ratsanity.option_true)])
+            | Filtered(MaxPlatforming & Drill & Punch, options=[OptionFilter(Ratsanity, Ratsanity.option_false)])
     )
     CanDefeatOwlloh = CanClimbInteriorTree & Level4
     CanUseMetalWorm = Has(item_names.MetalWorm) & (CanCleanZoo | CanGetHurt) & Jump & Headbutt
@@ -194,6 +195,12 @@ class CK64Rule(Enum):
     MonsterParkHouseButtons = WallButton & WallJump_Or_Climb & Slam
 
     PostOwllohDefeated = CanDefeatOwlloh
+
+    CanAccessDogGod = TowerMovement & Dive & (
+            Filtered(CanUseAllVoidScrews & Has(item_names.SomeOtherPlaceSwitch, count=4), options=[OptionFilter(Switchsanity, Switchsanity.option_true)])
+            | Filtered(CanUseAllVoidScrewsAndLevel6, options=[OptionFilter(Switchsanity, Switchsanity.option_false)])
+    )
+    CanAccessSwitch4 = Has(item_names.TestZoneCube, count=25, options=[OptionFilter(TestCubesanity, TestCubesanity.option_true)], filtered_resolution=True)
 
     AnxietyTowerChecks = PostOwllohDefeated & Level5 & MaxPlatforming
 

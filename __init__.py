@@ -4,17 +4,18 @@ from dataclasses import field
 from typing import TextIO
 
 from BaseClasses import Item, Tutorial, ItemClassification, Region, MultiWorld
-from Options import Accessibility
+from Options import Accessibility, OptionError
 from rule_builder.rules import Has
 from worlds.AutoWorld import WebWorld, World
-from .constants import item_names, GameName, region_names, BaseId, xp_name_to_value, xp_value_to_name, location_names
+from .constants import item_names, GameName, region_names, BaseId, xp_name_to_value, xp_value_to_name, location_names, \
+    goal_anxiety, goal_god
 from .constants.item_names import *
 from .items import item_table, CornKidzItem, lookup_name_to_id as item_name_to_id, get_trap_item_names, \
     get_filler_item_names
 from .locations import location_table, CK64LocationData, lookup_name_to_id as loc_name_to_id, achievement_locations, \
     CornKidzLocation, goal_locations, locked_locations, rat_locations, crank_locations, CornKidzLocationType, \
-    fish_locations
-from .options import CornKidz64Options, Goal, corn_kidz_option_groups
+    fish_locations, switch_locations, test_cube_locations
+from .options import CornKidz64Options, GoalSelection, corn_kidz_option_groups
 from .regions import region_table, CK64EntranceData, CK64RegionData
 from .rules import get_logic, CK64Rule
 
@@ -50,7 +51,6 @@ class CornKidz(World):
 
     web = CornKidzWeb()
 
-    goal_name = "Defeat Owlloh"
     excluded_locations = field(default_factory=list)
     is_first_mega_soda = True
     ut_can_gen_without_yaml = True
@@ -70,16 +70,19 @@ class CornKidz(World):
                 self.is_ut = True
                 self.apply_options_from_slot_data(self.multiworld.re_gen_passthrough[GameName])
 
+        if len(self.options.goal_selection.value) <= 0:
+            raise OptionError(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] Can't generate without a goal")
+
         if self.options.accessibility == self.options.accessibility.option_minimal:
             self.xp_required = 200
-            if self.options.goal == Goal.option_anxiety:
+            if goal_anxiety in self.options.goal_selection:
                 self.xp_required = 300
-            elif self.options.goal == Goal.option_god:
+            elif goal_god in self.options.goal_selection:
                 self.xp_required = 360
-        if (self.options.goal == Goal.option_god or self.options.accessibility == Accessibility.option_full) and self.options.xp_count < 360:
+        if (goal_god in self.options.goal_selection or self.options.accessibility == Accessibility.option_full) and self.options.xp_count < 360:
             logger.warning(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] forcing xp count to 360 because it's required either by goal or accessibility")
             self.options.xp_count.value = 360
-        elif self.options.goal == Goal.option_anxiety and self.options.xp_count < 300:
+        elif goal_anxiety in self.options.goal_selection and self.options.xp_count < 300:
             logger.warning(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] forcing xp count to 300 because it's required by goal")
             self.options.xp_count.value = 300
 
@@ -173,6 +176,8 @@ class CornKidz(World):
         rat_items: list[str] = [item_names.Rat] * 6 if self.options.ratsanity else []
         fish_items: list[str] = [item_names.Fish] * 3 if self.options.fishsanity else []
         move_items: list[str] = [item_names.Punch, item_names.Climb, item_names.Slam, item_names.Headbutt, item_names.WallJump, item_names.Crouch] if self.options.movesanity else []
+        switch_items: list[str] = [item_names.SomeOtherPlaceSwitch] * 4 if self.options.switchsanity else []
+        test_cube_item: list[str] = [item_names.TestZoneCube] * 25 if self.options.test_cubesanity else []
         xp_items: list[str] = self.get_xp_items()
         itempool: list[str] = \
             [item_names.Drill] + \
@@ -188,7 +193,10 @@ class CornKidz(World):
             [item_names.MetalWorm] + \
             rat_items + \
             fish_items + \
-            move_items
+            move_items + \
+            switch_items + \
+            test_cube_item
+
 
         # fill rest with junk
         junk: int = len(self.multiworld.get_unfilled_locations(self.player)) - len(itempool)
@@ -219,11 +227,11 @@ class CornKidz(World):
             if self.options.accessibility == Accessibility.option_minimal:
                 if name == item_names.CrankAnxietyTower:
                      # Anxiety tower crank is filler on non-anxiety/god runs
-                     if self.options.goal <= Goal.option_tower:
+                     if goal_anxiety not in self.options.goal_selection and goal_god not in self.options.goal_selection:
                          classification = ItemClassification.filler
                 elif name == item_names.VoidScrew:
                      # Void screws are useless on non-god runs
-                     if self.options.goal <= Goal.option_anxiety:
+                     if goal_god not in self.options.goal_selection:
                          classification = ItemClassification.filler
         # Todo: adjust based on options
         item = CornKidzItem(name, classification, item_id, self.player)
@@ -273,7 +281,9 @@ class CornKidz(World):
             if (location_data.name in achievement_locations and not self.options.achievementsanity) or \
                     (location_data.name in rat_locations and not self.options.ratsanity) or \
                     (location_data.name in fish_locations and not self.options.fishsanity) or \
-                    (location_data.name in crank_locations and not self.options.cranksanity):
+                    (location_data.name in crank_locations and not self.options.cranksanity) or \
+                    (location_data.name in switch_locations and not self.options.switchsanity) or \
+                    (location_data.name in test_cube_locations and not self.options.test_cubesanity):
                 self.excluded_locations.append(location_data)
                 continue
 
@@ -282,13 +292,14 @@ class CornKidz(World):
             location = CornKidzLocation(self.player, location_data.name, location_id, region)
             region.locations.append(location)
 
-            if location_data.name == goal_locations[self.options.goal]:
-                self.goal_name = location_data.name
-                location.place_locked_item(self.create_event(self.goal_name))
-                self.set_completion_rule(Has(self.goal_name))
-                placed_goal = True
-            elif location_data.name in locked_locations:
-                location.place_locked_item(self.create_event(location_data.name, False))
+            if location_data.name in locked_locations:
+                if goal_locations[location_data.name] in self.options.goal_selection:
+                    location.place_locked_item(self.create_event(item_names.GoalToken))
+                    placed_goal = True
+                else:
+                    location.place_locked_item(self.create_event(location_data.name, False))
+
+        self.set_completion_rule(Has(item_names.GoalToken, count=len(self.options.goal_selection.value)))
 
         if not placed_goal:
             raise Exception(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] "
@@ -297,7 +308,7 @@ class CornKidz(World):
     def fill_slot_data(self):
         return {
             "version": self.world_version.as_simple_string(),
-            "goal": self.options.goal.value,
+            "goal_selection": self.options.goal_selection.value,
             "xp_count": self.options.xp_count.value,
             "xp_item_count": self.options.xp_item_count.value,
             #"max_hp": self.options.max_hp.value,
@@ -306,6 +317,8 @@ class CornKidz(World):
             "fishsanity": self.options.fishsanity.value,
             "achievementsanity": self.options.achievementsanity.value,
             "movesanity": self.options.movesanity.value,
+            "switchsanity": self.options.switchsanity.value,
+            "test_cubesanity": self.options.test_cubesanity.value,
             "trap_percentage": self.options.trap_percentage.value,
             "open_wollows_hollow": self.options.open_wollows_hollow.value,
             "death_link": self.options.death_link.value,
@@ -375,16 +388,19 @@ class CornKidz(World):
         #             lines += [f'{TAB * 2}{{ BaseID + {i}, {loc.game_id} }}, //{loc.name}']
         #     lines += [f'{TAB}}};', '']
         #     lines += [f'{TAB}public static readonly Dictionary<long, int> APLocIdToRatIndex = new()', f'{TAB}{{']
-        #     j = 0
         #     for i, loc in enumerate(location_table):
         #         if loc.type == CornKidzLocationType.RAT:
-        #             lines += [f'{TAB * 2}{{ BaseID + {i}, {j} }}, //{loc.name}']
-        #             j += 1
+        #             lines += [f'{TAB * 2}{{ BaseID + {i}, {loc.game_id} }}, //{loc.name}']
         #     lines += [f'{TAB}}};', '']
         #     lines += [f'{TAB}public static readonly Dictionary<long, string> APLocIdToString = new()', f'{TAB}{{']
         #     for i, loc in enumerate(location_table):
         #         if loc.type == CornKidzLocationType.TEXT:
         #             lines += [f'{TAB * 2}{{ BaseID + {i}, "{loc.text}" }}, //{loc.name}']
+        #     lines += [f'{TAB}}};', '']
+        #     lines += [f'{TAB}public static readonly Dictionary<long, int> APLocIdToTestCubeIndex = new()', f'{TAB}{{']
+        #     for i, loc in enumerate(location_table):
+        #         if loc.type == CornKidzLocationType.TESTZONECUBE:
+        #             lines += [f'{TAB * 2}{{ BaseID + {i}, {loc.game_id} }}, //{loc.name}']
         #     lines += [f'{TAB}}};', '']
         #     f.write('\n'.join(lines))
         pass

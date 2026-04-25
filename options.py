@@ -1,17 +1,27 @@
 from dataclasses import dataclass
 
-from Options import Choice, Range, Toggle, DefaultOnToggle, PerGameCommonOptions, OptionGroup, DeathLinkMixin, \
-    StartInventoryPool
+from Options import Range, Toggle, DefaultOnToggle, PerGameCommonOptions, OptionGroup, DeathLinkMixin, \
+    StartInventoryPool, OptionSet
+from .constants import goal_owlloh, goal_tower, goal_anxiety, goal_god
 
 
-class Goal(Choice):
-    """The clear condition to finish the game."""
-    display_name = "Goal"
-    option_owlloh = 0
-    option_tower = 1
-    option_anxiety = 2
-    option_god = 3
-    default = 1
+class GoalSelection(OptionSet):
+    """Select which goal(s) you need to reach to finish the game.
+
+    Possible values are:
+    - **Defeat Owlloh**
+    - **Climb the Tower**
+    - **Climb the Anxiety Tower**
+    - **Meet the Dog God**
+    """
+    display_name = "Goal Selection"
+    valid_keys = [
+        goal_owlloh,
+        goal_tower,
+        goal_anxiety,
+        goal_god
+    ]
+    default = frozenset({goal_owlloh, goal_tower})
 
 
 class XPCount(Range):
@@ -62,6 +72,14 @@ class Achievementsanity(Toggle):
     display_name = "Achievementsanity"
 
 
+class Switchsanity(Toggle):
+    """Adds the 4 cube switches in Some Other Place into the location pool."""
+    display_name = "Switchsanity"
+
+class TestCubesanity(Toggle):
+    """Adds the 25 cubes in the Test Zone into the location pool."""
+    display_name = "Test Cubesanity"
+
 class TrapPercentage(Range):
     """Determines the number of trap items when populating the item pool with filler."""
     display_name = "Trap Percentage"
@@ -94,7 +112,7 @@ class OpenWollowsHollow(Toggle):
 @dataclass
 class CornKidz64Options(PerGameCommonOptions, DeathLinkMixin):
     start_inventory_from_pool: StartInventoryPool
-    goal: Goal
+    goal_selection: GoalSelection
     xp_count: XPCount
     xp_item_count: XPItemCount
     # max_hp: MaxHP
@@ -102,6 +120,8 @@ class CornKidz64Options(PerGameCommonOptions, DeathLinkMixin):
     ratsanity: Ratsanity
     fishsanity: Fishsanity
     achievementsanity: Achievementsanity
+    switchsanity: Switchsanity
+    test_cubesanity: TestCubesanity
     trap_percentage: TrapPercentage
     movesanity: Movesanity
     open_wollows_hollow: OpenWollowsHollow
@@ -111,7 +131,7 @@ corn_kidz_option_groups: list[OptionGroup] = [
     OptionGroup(
         name="Base Options",
         options=[
-            Goal,
+            GoalSelection,
             OpenWollowsHollow,
             # MaxHP,
             TrapPercentage
@@ -124,7 +144,9 @@ corn_kidz_option_groups: list[OptionGroup] = [
             Ratsanity,
             Fishsanity,
             Achievementsanity,
-            Movesanity
+            Movesanity,
+            Switchsanity,
+            TestCubesanity
         ],
     ),
     OptionGroup(

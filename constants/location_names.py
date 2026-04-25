@@ -181,20 +181,20 @@ SYBIL = "Some Other Place: Sybil Painting"
 ALLY = "Some Other Place: Ally Painting"
 #endregion
 #region Tower
-TowerComplete = "Anxiety Tower: Tower Complete"
+TowerComplete = "Tower Complete"
 #endregion
 #region Anxiety Tower
 CrankAnxietyTower = f"Anxiety Tower: {item_names.Crank}"
 VoidScrewAnxietyTower1 = f"Anxiety Tower: {item_names.VoidScrew} 1"
 VoidScrewAnxietyTower2 = f"Anxiety Tower: {item_names.VoidScrew} 2"
 AnxietyComplete = "Anxiety Tower Complete"
+BlackHeadband = f"Anxiety Tower: {item_names.BlackHeadband} Under Entrance Soda Machine"
 #endregion
 #region Some Other Place
 VoidScrewSomeOtherPlace = f"Some Other Place: {item_names.VoidScrew}"
 DogGod = "Some Other Place: Dog God"
 BlueHeadband = f"Some Other Place: {item_names.BlueHeadband}"
 GreenHeadband = f"Some Other Place: {item_names.GreenHeadband}"
-BlackHeadband = f"Anxiety Tower: {item_names.BlackHeadband} Under Entrance Soda Machine"
 #endregion
 #region Achievements
 Achievement_LittleCornCadet = "Achievement: Little Corn Cadet"
@@ -225,4 +225,37 @@ Rat6 = f"Hollow Zoo: {item_names.Rat} By Grass Hill"
 Fish1 = f"Hollow Graveyard: {item_names.Fish} Killed"
 Fish2 = f"Hollow: Inside The Tree {item_names.Fish} 1"
 Fish3 = f"Hollow: Inside The Tree {item_names.Fish} 2"
+#endregion
+#region Switchsanity
+SomeOtherPlaceSwitch1 = f"Some Other Place: Switch Near {item_names.GreenHeadband}"
+SomeOtherPlaceSwitch2 = f"Some Other Place: Switch Above Pool"
+SomeOtherPlaceSwitch3 = f"Some Other Place: Switch In 2010"
+SomeOtherPlaceSwitch4 = f"Some Other Place: Switch In Test Zone"
+#endregion
+#region TestCubesanity
+TestZoneCube1 = f"Test Zone: Cube Behind Crank Door At Breakable Blocks"
+TestZoneCube2 = f"Test Zone: Cube On Timer Challenge Dirt Pillar"
+TestZoneCube3 = f"Test Zone: Cube Above Jump Pad Climb"
+TestZoneCube4 = f"Test Zone: Cube Above Far Side Pipe"
+TestZoneCube5 = f"Test Zone: Cube On Drill Climb"
+TestZoneCube6 = f"Test Zone: Cube By Swing Above Pool"
+TestZoneCube7 = f"Test Zone: Cube In Pool"
+TestZoneCube8 = f"Test Zone: Cube On Platform Above Owls"
+TestZoneCube9 = f"Test Zone: Cube By Moveable Boulders"
+TestZoneCube10 = f"Test Zone: Cube By Swing After Bubbles Near Entrance"
+TestZoneCube11 = f"Test Zone: Cube Above Crank Lift"
+TestZoneCube12 = f"Test Zone: Cube Above Ground Screw Lift"
+TestZoneCube13 = f"Test Zone: Cube In Breakable Block At Bomb Bird"
+TestZoneCube14 = f"Test Zone: Cube In Top Breakable Block"
+TestZoneCube15 = f"Test Zone: Cube On Dirt Pillar In Pool"
+TestZoneCube16 = f"Test Zone: Cube On Dirt Pillar Near Entrance"
+TestZoneCube17 = f"Test Zone: Cube By Swing Above Drill Climb"
+TestZoneCube18 = f"Test Zone: Cube In Doorway Red White Gate"
+TestZoneCube19 = f"Test Zone: Cube In Doorway Behind White Gate"
+TestZoneCube20 = f"Test Zone: Cube On Smaller Climb Wall"
+TestZoneCube21 = f"Test Zone: Cube On Dirt Wall With Pipes"
+TestZoneCube22 = f"Test Zone: Cube At Moving Red Cylinder"
+TestZoneCube23 = f"Test Zone: Cube At Moving Red Ball"
+TestZoneCube24 = f"Test Zone: Cube On Pipe Near Entrance"
+TestZoneCube25 = f"Test Zone: Cube In Chest"
 #endregion

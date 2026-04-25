@@ -18,6 +18,10 @@ CrankMonsterPark = f"{Crank} ({region_names.MonsterPark})"  # switch 108
 CrankHollowElevator = f"{Crank} ({region_names.WollowsHollow} Elevator)"  # switch 228
 CrankHollowZooWall = f"{Crank} ({region_names.WollowsHollow} below Zoo)"  # switch 229
 CrankAnxietyTower = f"{Crank} ({region_names.AnxietyTower})"  # switch 410
+# Other
+SomeOtherPlaceSwitch = f"{region_names.SomeOtherPlace} Switch"
+TestZoneCube = f"{region_names.TestZone} Cube"
+
 
 # XP
 XPCube = 'XP Cube'
@@ -52,4 +56,4 @@ BlueHeadband = 'Blue Headband'
 GreenHeadband = 'Green Headband'
 BlackHeadband = 'Black Headband'
 
-Victory = "Victory"
+GoalToken = "Goal Token"

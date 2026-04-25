@@ -122,7 +122,7 @@ item_table: list[CK64ItemData] = [
     ),
     CK64ItemData(
         item_names.VoidScrew,
-        ItemClassification.progression,
+        ItemClassification.progression_deprioritized,
     ),
     # endregion
     # region Progression
@@ -132,19 +132,19 @@ item_table: list[CK64ItemData] = [
     # ),
     CK64ItemData(
         item_names.XPCube,
-        ItemClassification.progression,
+        ItemClassification.progression_deprioritized,
     ),
     CK64ItemData(
         item_names.RedScrew,
-        ItemClassification.progression,
+        ItemClassification.progression_deprioritized,
     ),
     CK64ItemData(
         item_names.Moth,
-        ItemClassification.progression,
+        ItemClassification.progression_deprioritized,
     ),
     CK64ItemData(
         item_names.XPCrystal,
-        ItemClassification.progression,
+        ItemClassification.progression_deprioritized,
     ),
     # endregion
     # region Filler
@@ -167,6 +167,14 @@ item_table: list[CK64ItemData] = [
         ItemClassification.trap,
     ),
     # endregion
+    CK64ItemData(
+        item_names.SomeOtherPlaceSwitch,
+        ItemClassification.progression,
+    ),
+    CK64ItemData(
+        item_names.TestZoneCube,
+        ItemClassification.progression_deprioritized,
+    ),
 ]
 
 lookup_id_to_name: typing.Dict[int, str] = {BaseId + i: data.name for i, data in enumerate(item_table)}

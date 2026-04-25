@@ -29,3 +29,4 @@ WollowsHollowTreeSideRoom = f"{WollowsHollow} Tree Side Room"  # BatTreeSideRoom
 Tower = "Tower"
 AnxietyTower = "Anxiety Tower"
 SomeOtherPlace = "Some Other Place"  # Hollow, Jump, Headbutt, Climb or WallJump
+TestZone = "Test Zone"

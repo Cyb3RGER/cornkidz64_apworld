@@ -1,12 +1,11 @@
 import typing
 from dataclasses import dataclass, field
+from enum import IntEnum
 
 from BaseClasses import Location
 from BaseClasses import LocationProgressType
-from .options import Goal
+from .constants import location_names, region_names, GameName, BaseId, goal_owlloh, goal_tower, goal_anxiety, goal_god
 from .rules import CK64Rule as Rule
-from .constants import location_names, region_names, GameName, BaseId
-from enum import IntEnum
 
 
 class CornKidzLocation(Location):
@@ -20,7 +19,8 @@ class CornKidzLocationType(IntEnum):
     SWITCH = 4,
     TEXT = 5,
     RAT = 6,
-    EVENT = 7
+    EVENT = 7,
+    TESTZONECUBE = 8
 
 
 @dataclass
@@ -34,7 +34,9 @@ class CK64LocationData:
     type: CornKidzLocationType = CornKidzLocationType.SAVEITEM  # this doesn't do anything rn, just for me to keep track
     progress_type: LocationProgressType = LocationProgressType.DEFAULT  # ignored for now
 
-    def __init__(self, name: str, game_id: typing.Optional[int], region: str, rules=None, _type: CornKidzLocationType = CornKidzLocationType.SAVEITEM, progress_type: LocationProgressType = LocationProgressType.DEFAULT, text: typing.Optional[str] = None):
+    def __init__(self, name: str, game_id: typing.Optional[int], region: str, rules=None,
+                 _type: CornKidzLocationType = CornKidzLocationType.SAVEITEM,
+                 progress_type: LocationProgressType = LocationProgressType.DEFAULT, text: typing.Optional[str] = None):
         if rules is None:
             rules = []
         if text is None and type == CornKidzLocationType.TEXT:
@@ -51,7 +53,8 @@ class CK64LocationData:
         self.progress_type = progress_type
         self.type = _type
         self.text = text
-        assert isinstance(self.rules, list) and isinstance(self.rules[0], list), f"rules couldn't be converted to a list of lists {rules}"
+        assert isinstance(self.rules, list) and isinstance(self.rules[0],
+                                                           list), f"rules couldn't be converted to a list of lists {rules}"
 
 
 location_table: list[CK64LocationData] = [
@@ -679,7 +682,8 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.ScrewHollowZoo, 207,
         region_names.WollowsHollowZoo,
-        [Rule.MaxPlatforming, Rule.Drill], #TODO: I think this (and maybe some rats) needs to check for slam if zoo not clean
+        [Rule.MaxPlatforming, Rule.Drill],
+        # TODO: I think this (and maybe some rats) needs to check for slam if zoo not clean
     ),
     CK64LocationData(
         location_names.ScrewFlippedHollowTreeSideRoom, 204,
@@ -744,7 +748,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.CrystalHollowAboveEntry, 280,
         region_names.WollowsHollowRavine,
-        [Rule.MaxPlatforming],
+        [Rule.MaxPlatforming, Rule.Slam],
     ),
     CK64LocationData(
         location_names.CrystalHollowZombieChamber, 292,
@@ -932,7 +936,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.MiracleSoda2, 500,
         region_names.SomeOtherPlace,
-        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
+        [Rule.CanUseAllVoidScrews, Rule.MaxPlatforming],
         progress_type=LocationProgressType.EXCLUDED,
     ),
     CK64LocationData(
@@ -979,21 +983,21 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.STUPIDDUCK, None,
         region_names.SomeOtherPlace,
-        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
+        [Rule.CanUseAllVoidScrews, Rule.MaxPlatforming],
         _type=CornKidzLocationType.TEXT,
         text="CAN SOMEBODY TELL ME WHAT THESE STUPID DUCK THINGS EVEN ARE?"
     ),
     CK64LocationData(
         location_names.SYBIL, None,
         region_names.SomeOtherPlace,
-        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
+        [Rule.CanUseAllVoidScrews, Rule.MaxPlatforming],
         _type=CornKidzLocationType.TEXT,
         text="DANG... WHY COULDN'T I HAVE BEEN TRAPPED IN A REOCCURING DREAM WITH HER INSTEAD OF ALEXIS?"
     ),
     CK64LocationData(
         location_names.ALLY, None,
         region_names.SomeOtherPlace,
-        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
+        [Rule.CanUseAllVoidScrews, Rule.MaxPlatforming],
         _type=CornKidzLocationType.TEXT,
         text="WHAT IS THIS? ALEXIS STEALING MY CLOTHES?"
     ),
@@ -1020,7 +1024,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.DogGod, None,
         region_names.SomeOtherPlace,
-        [Rule.CanUseAllVoidScrews, Rule.TowerMovement, Rule.Dive],
+        [Rule.CanAccessDogGod],
         _type=CornKidzLocationType.EVENT
     ),
     # endregion
@@ -1069,13 +1073,13 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.Achievement_AnnoyedTheVoid, 8,
         region_names.SomeOtherPlace,
-        [Rule.CanUseVoidScrewsButNotLevel6],  # ToDo: probably wrong
+        [Rule.CanUseAllVoidScrews],
         _type=CornKidzLocationType.ACHIEVEMENT,
     ),
     CK64LocationData(
         location_names.Achievement_HighBreadHeaven, 9,
         region_names.SomeOtherPlace,
-        [Rule.CanUseAllVoidScrews, Rule.TowerMovement, Rule.Dive],
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.TowerMovement, Rule.Dive],
         _type=CornKidzLocationType.ACHIEVEMENT,
     ),
     CK64LocationData(
@@ -1117,13 +1121,13 @@ location_table: list[CK64LocationData] = [
     # endregion
     # region Rats
     CK64LocationData(
-        location_names.Rat1, 1,
+        location_names.Rat1, 0,
         region_names.WollowsHollowZoo,
         [Rule.Punch, Rule.Jump, Rule.WallJump_Or_Climb],
         _type=CornKidzLocationType.RAT,
     ),
     CK64LocationData(
-        location_names.Rat2, 2,
+        location_names.Rat2, 1,
         region_names.WollowsHollowZoo,
         [
             [Rule.Punch, Rule.MaxPlatforming],
@@ -1132,25 +1136,25 @@ location_table: list[CK64LocationData] = [
         _type=CornKidzLocationType.RAT,
     ),
     CK64LocationData(
-        location_names.Rat3, 3,
+        location_names.Rat3, 2,
         region_names.WollowsHollowZoo,
         [Rule.Punch, Rule.MaxPlatforming],
         _type=CornKidzLocationType.RAT,
     ),
     CK64LocationData(
-        location_names.Rat4, 4,
+        location_names.Rat4, 3,
         region_names.WollowsHollowZoo,
         [Rule.Punch, Rule.Drill, Rule.MaxPlatforming],
         _type=CornKidzLocationType.RAT,
     ),
     CK64LocationData(
-        location_names.Rat5, 5,
+        location_names.Rat5, 4,
         region_names.WollowsHollowZoo,
         [Rule.Punch, Rule.Drill, Rule.MaxPlatforming],
         _type=CornKidzLocationType.RAT,
     ),
     CK64LocationData(
-        location_names.Rat6, 6,
+        location_names.Rat6, 5,
         region_names.WollowsHollowZoo,
         [Rule.Punch, Rule.Drill, Rule.MaxPlatforming],
         _type=CornKidzLocationType.RAT,
@@ -1180,7 +1184,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.BlueHeadband, None,
         region_names.SomeOtherPlace,
-        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
+        [Rule.CanUseAllVoidScrews, Rule.MaxPlatforming],
         _type=CornKidzLocationType.TEXT,
         text="WEAR BLUE HEADBAND + SHIRT?"
 
@@ -1188,7 +1192,7 @@ location_table: list[CK64LocationData] = [
     CK64LocationData(
         location_names.GreenHeadband, None,
         region_names.SomeOtherPlace,
-        [Rule.CanUseVoidScrewsButNotLevel6, Rule.MaxPlatforming],
+        [Rule.CanUseAllVoidScrews, Rule.MaxPlatforming],
         _type=CornKidzLocationType.TEXT,
         text="WEAR GREEN HEADBAND + SHIRT?"
     ),
@@ -1198,6 +1202,184 @@ location_table: list[CK64LocationData] = [
         [Rule.MaxPlatforming],
         _type=CornKidzLocationType.TEXT,
         text="WEAR BLACK HEADBAND + SHIRT?"
+    ),
+    # endregion
+    # region
+    CK64LocationData(
+        location_names.SomeOtherPlaceSwitch1, 512,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrews, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.SWITCH
+    ),
+    CK64LocationData(
+        location_names.SomeOtherPlaceSwitch2, 513,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrews, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.SWITCH
+    ),
+    CK64LocationData(
+        location_names.SomeOtherPlaceSwitch3, 514,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrews, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.SWITCH
+    ),
+    CK64LocationData(
+        location_names.SomeOtherPlaceSwitch4, 515,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming, Rule.CanAccessSwitch4],
+        _type=CornKidzLocationType.SWITCH
+    ),
+    # endregion
+    # region
+    CK64LocationData(
+        location_names.TestZoneCube1, 1,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube2, 2,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube3, 3,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube4, 4,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube5, 5,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube6, 6,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube7, 7,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube8, 8,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube9, 9,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube10, 10,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube11, 11,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube12, 12,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube13, 13,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube14, 14,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube15, 15,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube16, 16,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube17, 17,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube18, 18,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube19, 19,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube20, 20,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube21, 21,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube22, 22,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube23, 23,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube24, 24,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
+    ),
+    CK64LocationData(
+        location_names.TestZoneCube25, 25,
+        region_names.SomeOtherPlace,
+        [Rule.CanUseAllVoidScrewsAndLevel6, Rule.MaxPlatforming],
+        _type=CornKidzLocationType.TESTZONECUBE
     ),
     # endregion
 ]
@@ -1210,10 +1392,10 @@ locked_locations = [
 ]
 
 goal_locations = {
-    Goal.option_owlloh: location_names.DefeatOwlloh,
-    Goal.option_tower: location_names.TowerComplete,
-    Goal.option_anxiety: location_names.AnxietyComplete,
-    Goal.option_god: location_names.DogGod,
+    location_names.DefeatOwlloh: goal_owlloh,
+    location_names.TowerComplete: goal_tower,
+    location_names.AnxietyComplete: goal_anxiety,
+    location_names.DogGod: goal_god,
 }
 
 achievement_locations = [
@@ -1253,6 +1435,41 @@ fish_locations = [
     location_names.Fish1,
     location_names.Fish2,
     location_names.Fish3,
+]
+
+switch_locations = [
+    location_names.SomeOtherPlaceSwitch1,
+    location_names.SomeOtherPlaceSwitch2,
+    location_names.SomeOtherPlaceSwitch3,
+    location_names.SomeOtherPlaceSwitch4,
+]
+
+test_cube_locations =  [
+    location_names.TestZoneCube1,
+    location_names.TestZoneCube2,
+    location_names.TestZoneCube3,
+    location_names.TestZoneCube4,
+    location_names.TestZoneCube5,
+    location_names.TestZoneCube6,
+    location_names.TestZoneCube7,
+    location_names.TestZoneCube8,
+    location_names.TestZoneCube9,
+    location_names.TestZoneCube10,
+    location_names.TestZoneCube11,
+    location_names.TestZoneCube12,
+    location_names.TestZoneCube13,
+    location_names.TestZoneCube14,
+    location_names.TestZoneCube15,
+    location_names.TestZoneCube16,
+    location_names.TestZoneCube17,
+    location_names.TestZoneCube18,
+    location_names.TestZoneCube19,
+    location_names.TestZoneCube20,
+    location_names.TestZoneCube21,
+    location_names.TestZoneCube22,
+    location_names.TestZoneCube23,
+    location_names.TestZoneCube24,
+    location_names.TestZoneCube25,
 ]
 
 lookup_id_to_name: typing.Dict[int, str] = {BaseId + i: data.name for i, data in enumerate(location_table)}

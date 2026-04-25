@@ -13,4 +13,9 @@ xp_name_to_value = {
     item_names.XPCrystal: 10
 }
 
+goal_owlloh = "Defeat Owlloh"
+goal_tower = "Climb the Tower"
+goal_anxiety = "Climb the Anxiety Tower"
+goal_god = "Meet the Dog God"
+
 xp_value_to_name = {v: k for k, v in xp_name_to_value.items()}
