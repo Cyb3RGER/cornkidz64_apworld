@@ -8,7 +8,7 @@ from Options import Accessibility, OptionError
 from rule_builder.rules import Has
 from worlds.AutoWorld import WebWorld, World
 from .constants import item_names, GameName, region_names, BaseId, xp_name_to_value, xp_value_to_name, location_names, \
-    goal_anxiety, goal_god
+    goal_anxiety, goal_god, goal_owlloh, goal_tower
 from .constants.item_names import *
 from .items import item_table, CornKidzItem, lookup_name_to_id as item_name_to_id, get_trap_item_names, \
     get_filler_item_names
@@ -71,13 +71,15 @@ class CornKidz(World):
                 self.apply_options_from_slot_data(self.multiworld.re_gen_passthrough[GameName])
 
         if len(self.options.goal_selection.value) <= 0:
-            raise OptionError(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] Can't generate without a goal")
+            logger.warning(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] Can't generate without a goal, forcing default goals.")
+            self.options.goal_selection.value = {goal_owlloh, goal_tower}
+            # raise OptionError(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] Can't generate without a goal")
 
         if self.options.accessibility == self.options.accessibility.option_minimal:
             self.xp_required = 200
             if goal_anxiety in self.options.goal_selection:
                 self.xp_required = 300
-            elif goal_god in self.options.goal_selection:
+            if goal_god in self.options.goal_selection:
                 self.xp_required = 360
         if (goal_god in self.options.goal_selection or self.options.accessibility == Accessibility.option_full) and self.options.xp_count < 360:
             logger.warning(f"[Corn Kidz 64 - {self.multiworld.get_player_name(self.player)}] forcing xp count to 360 because it's required either by goal or accessibility")
@@ -216,15 +218,15 @@ class CornKidz(World):
         item_data = item_table[item_id - BaseId]
         classification = item_data.classification
         if not self.is_ut:
-            if name in xp_name_to_value.keys():
-                if self.xp_counter >= self.xp_required:
-                    classification = ItemClassification.useful
-                self.xp_counter += xp_name_to_value[name]
-            elif name == item_names.MegaDreamSoda:
+            if name == item_names.MegaDreamSoda:
                 if not self.options.achievementsanity or not self.is_first_mega_soda:
                     classification = ItemClassification.useful
                 self.is_first_mega_soda = False
             if self.options.accessibility == Accessibility.option_minimal:
+                if name in xp_name_to_value.keys():
+                    if self.xp_counter > self.xp_required:
+                        classification = ItemClassification.useful
+                    self.xp_counter += xp_name_to_value[name]
                 if name == item_names.CrankAnxietyTower:
                      # Anxiety tower crank is filler on non-anxiety/god runs
                      if goal_anxiety not in self.options.goal_selection and goal_god not in self.options.goal_selection:

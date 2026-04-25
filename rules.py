@@ -196,9 +196,9 @@ class CK64Rule(Enum):
 
     PostOwllohDefeated = CanDefeatOwlloh
 
-    CanAccessDogGod = TowerMovement & Dive & (
-            Filtered(CanUseAllVoidScrews & Has(item_names.SomeOtherPlaceSwitch, count=4), options=[OptionFilter(Switchsanity, Switchsanity.option_true)])
-            | Filtered(CanUseAllVoidScrewsAndLevel6, options=[OptionFilter(Switchsanity, Switchsanity.option_false)])
+    CanAccessDogGod = TowerMovement & Dive & CanUseAllVoidScrews & (
+            Filtered(Has(item_names.SomeOtherPlaceSwitch, count=4), options=[OptionFilter(Switchsanity, Switchsanity.option_true)])
+            | Filtered(Level6, options=[OptionFilter(Switchsanity, Switchsanity.option_false)])
     )
     CanAccessSwitch4 = Has(item_names.TestZoneCube, count=25, options=[OptionFilter(TestCubesanity, TestCubesanity.option_true)], filtered_resolution=True)
 
